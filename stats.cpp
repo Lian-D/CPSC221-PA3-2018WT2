@@ -7,6 +7,31 @@ stats::stats(PNG & im){
 
 }
 
+
+void stats::initializeSHX(PNG & im){
+    for(int x = 0; x < im.width(); x++){
+        for(int y = 0; y < im.height(); y++){
+            HSLAPixel* pixel = im.getPixel(x,y);
+            sumHueX[x][y] = cos(pixel->h * PI/180);
+            // Initializing the sum of the first row of x and first row of y
+            if(x == 0 && y >= 1){
+                // For this case, where this is the first column, the cumulative sum is produced by simply adding the sum 
+                // of the entry above to the current hue value;
+                sumHueX[x][y] = sumHueX[x][y] + sumHueX[x][y-1]; 
+            }
+            if(y == 0 && x >= 1){
+                sumHueX[x][y] = sumHueX[x][y] + sumHueX[x-1][y];
+            }
+            // We add the cumulative sum of the entry above, the entry to the left, and the current entry, and then 
+            // subtract the overlapped sums, which is represented by x-1, y-1
+            if(x > 0 && y > 0){
+                sumHueX[x][y] = sumeHueX[x][y] + sumHueX[x][y-1] + sumeHueX[x-1][y] - sumHueX[x-1][y-1];
+            }
+        }
+    }
+}
+
+
 long stats::rectArea(pair<int,int> ul, pair<int,int> lr){
 
 /* your code here */

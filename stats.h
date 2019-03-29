@@ -78,7 +78,20 @@ public:
      * bins holding no pixels should not be included in the sum. */
     double entropy(vector<int> & d ,int area);
 
-    void initializeSHX(PNG & im);
+     // Helper function that initializes sumHueX;
+    void initializeHueX(PNG& im);
+
+    // Helper function that initializes sumHueY;
+    void initializeHueY(PNG& im);
+
+    // Helper function that initializes sumSat;
+    void initializeSat(PNG& im);
+
+    // Helper function that initializes sumLum;
+    void initializeLum(PNG& im);
+
+    // Helper function that initializes sumHist;
+    void initializeHist(PNG& im);
 
 };
 

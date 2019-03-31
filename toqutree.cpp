@@ -38,6 +38,16 @@ toqutree::toqutree(PNG & imIn, int k){
 /* that imIn is large enough to contain an image of that size. */
 
 /* your code here */
+
+int ctrWidth = (imIn->width)/2;
+int ctrHeight = (imIn->height)/2;
+
+pair<int, int> ctr = {ctrWidth, ctrHeight};
+
+
+Node node = new Node(ctr);
+
+
 }
 
 int toqutree::size() {

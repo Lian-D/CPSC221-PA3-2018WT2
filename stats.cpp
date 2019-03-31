@@ -8,7 +8,7 @@ initializeHueX(im);
 initializeHueY(im);
 initializeSat(im);
 initializeLum(im);
-
+initializeHist(im);
 }
 
 
@@ -144,7 +144,7 @@ void stats::initializeHist(PNG& im){
         vector<vector<int>> vertical2;
         for(int y1 = 0; y1 < im.height(); y1++){
             vector<int> bin;
-            for(int b = 0; b < 37; b++){
+            for(int b = 0; b < 36; b++){
                 bin.push_back(0);
             }
             vertical2.push_back(bin);
@@ -162,20 +162,20 @@ void stats::initializeHist(PNG& im){
 
             // This is the case where x is 0, so to get the histograms, we simply add the current histogram to the one above it
             if( x2 == 0 && y2 >= 1){
-                for(int ba = 0; ba < 37; ba++){
+                for(int ba = 0; ba < 36; ba++){
                     hist[x2][y2][ba] = hist[x2][y2-1][ba] + hist[x2][y2][ba]; 
                 }
             }
             // This is the case where y is 0 , so to get hte histograms, we simply add the current histogram to the one to the left of it
             if( y2 == 0 && x1 >= 1){
-                for(int bingsoo = 0; bingsoo < 37; bingsoo++){
+                for(int bingsoo = 0; bingsoo < 36; bingsoo++){
                     hist[x2][y2][bingsoo] = hist[x2-1][y2][bingsoo] + hist[x2][y2][bingsoo];
                 }
             }
             // Otherwise, we get the histogram by adding the histogram above and to the left of it, and then subtracting the overlapping
             // histogram at x2-1, y2 - 1;
             if(x2 > 0 && y2 > 0){
-                for(int bingo = 0; bingo < 37; bingo++){
+                for(int bingo = 0; bingo < 36; bingo++){
                     hist[x2][y2][bingo] = hist[x2-1][y2][bingo] + hist[x2][y2-1][bingo] + hist[x2][y2][bingo] - hist[x2-1][y2-1][bingo];
                 }
             }
@@ -264,8 +264,40 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
 }
 
 vector<int> stats::buildHist(pair<int,int> ul, pair<int,int> lr){
+// non zero normal case 
+    if(ul.first != 0 && ul.second != 0){
+        vector<int> oghistogram = hist[lr.first][lr.second];
+        vector<int> blhistogram = hist[ul.first-1][lr.second];
+        vector<int> uphistogram = hist[ul.first-1][ul.second-1];
+        vector<int> urhistogram = hist[lr.first][ul.second-1];
+        for(int i = 0; i < 36; i++){
+            oghistogram[i] = oghistogram[i] - blhistogram[i] - urhistogram[i] + uphistogram[i];
+        }
+        return oghistogram;
+    }
+    if(ul.first == 0 && ul.second == 0){
+        vector<int> histogram = hist[lr.first][lr.second];
+        return histogram;
+    }
+    // first case where x is zero
+    if(ul.first == 0 && ul.second != 0){
+        vector<int> histogram = hist[lr.first][lr.second];
+        vector<int> tophisto = hist[lr.first][ul.second-1];
+        for(int i = 0; i < 36; i++){
+            histogram[i] = histogram[i] - tophisto[i];
+        }
+        return histogram;
+    }
+    // where y is zero
+    if(ul.first != 0 && ul.second == 0){
+        vector<int> histogram = hist[lr.first][lr.second];
+        vector<int> lefthisto = hist[lr.first][lr.second-1];
+        for(int i = 0; i < 36; i++){
+            histogram[i] = histogram[i] - lefthisto[i];
+        }
+        return histogram;
+    }
 
-/* your code here */
 }
 
 // takes a distribution and returns entropy
@@ -289,5 +321,10 @@ double stats::entropy(vector<int> & distn,int area){
 double stats::entropy(pair<int,int> ul, pair<int,int> lr){
 
 /* your code here */
+    int area = rectArea(ul,lr);
+    
+    vector<int> histogram = buildHist(ul,lr);
+    
+    return entropy(histogram,area);
 
 }

@@ -38,13 +38,6 @@ toqutree::toqutree(PNG & imIn, int k){
 /* that imIn is large enough to contain an image of that size. */
 
 /* your code here */
-
-// int ctrWidth = (imIn->width)/2;
-// int ctrHeight = (imIn->height)/2;
-
-// pair<int, int> ctr = {ctrWidth, ctrHeight};
-
-
 // Node node = new Node(ctr);
 
 // Creating the subimage
@@ -68,11 +61,26 @@ root = buildTree(subimage,k);
 
 /* your code here */
 
-
 }
 
 int toqutree::size() {
-/* your code here */
+int size = 1; //This node
+if (*NW == NULL && *SW = NULL && *SE == NULL && *NE == NULL){
+	return size = size + 0;
+}
+if (*NW != NULL){
+	size = size + NW.size();
+}
+if (*NE != NULL){
+	size = size + NE.size();
+}
+if (*SW != NULL){
+	size = size + SW.size();
+}
+if (*SE != NULL){
+	size = size + SE.size();
+}
+return size;
 }
 
 

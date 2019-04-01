@@ -117,7 +117,31 @@ void toqutree::prune(double tol){
 
 /* called by destructor and assignment operator*/
 void toqutree::clear(Node * & curr){
-/* your code here */
+
+	//Run through conds to slowly delete the node
+	if (*NW != NULL){
+		clear(*NW);
+	}
+	if (*NE != NULL){
+		clear(*NE);
+	}
+	if (*SW != NULL){
+		clear(*SW);
+	}
+	if (*SE != NULL){
+		clear(*SE);
+	}
+
+	if (*NW == NULL && *SW = NULL && *SE == NULL && *NE == NULL){
+		delete curr;
+		curr = NULL;
+	}
+	else {
+		delete curr;
+		curr = NULL;
+	}
+}
+//Everything should be deleted now
 }
 
 /* done */

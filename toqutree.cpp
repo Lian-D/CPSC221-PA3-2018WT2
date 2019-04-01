@@ -39,13 +39,34 @@ toqutree::toqutree(PNG & imIn, int k){
 
 /* your code here */
 
-int ctrWidth = (imIn->width)/2;
-int ctrHeight = (imIn->height)/2;
+// int ctrWidth = (imIn->width)/2;
+// int ctrHeight = (imIn->height)/2;
 
-pair<int, int> ctr = {ctrWidth, ctrHeight};
+// pair<int, int> ctr = {ctrWidth, ctrHeight};
 
 
-Node node = new Node(ctr);
+// Node node = new Node(ctr);
+
+// Creating the subimage
+PNG subimage(pow(2,k),pow(2,k));
+int center = imIn.width()/2;
+// Getting the right coordinates for the subimage square
+int upleft = center - pow(2,k)/2;
+int upright = center + pow(2,k)/2;
+
+// Change the pixel by using getPixel, and then change the pixel 
+
+for(int x = 0; x < pow(2,k); x++){
+	for(int y = 0; y < pow(2,k); y++){
+		HSLAPixel* pixel = subimage.getPixel(x,y);
+		HSLAPixel* originalpixel = imIn.getPixel(upleft + x, upleft + y);
+		*pixel = *originalpixel; 
+	}
+}
+
+root = buildTree(subimage,k);
+
+/* your code here */
 
 
 }

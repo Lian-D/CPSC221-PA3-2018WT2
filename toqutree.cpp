@@ -48,7 +48,6 @@ int upleft = center - pow(2,k)/2;
 int upright = center + pow(2,k)/2;
 
 // Change the pixel by using getPixel, and then change the pixel 
-
 for(int x = 0; x < pow(2,k); x++){
 	for(int y = 0; y < pow(2,k); y++){
 		HSLAPixel* pixel = subimage.getPixel(x,y);
@@ -140,8 +139,7 @@ void toqutree::clear(Node * & curr){
 		delete curr;
 		curr = NULL;
 	}
-}
-//Everything should be deleted now
+	//Everything should be deleted now
 }
 
 /* done */

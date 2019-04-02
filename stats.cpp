@@ -167,7 +167,7 @@ void stats::initializeHist(PNG& im){
                 }
             }
             // This is the case where y is 0 , so to get hte histograms, we simply add the current histogram to the one to the left of it
-            if( y2 == 0 && x1 >= 1){
+            if( y2 == 0 && x2 >= 1){
                 for(int bingsoo = 0; bingsoo < 36; bingsoo++){
                     hist[x2][y2][bingsoo] = hist[x2-1][y2][bingsoo] + hist[x2][y2][bingsoo];
                 }

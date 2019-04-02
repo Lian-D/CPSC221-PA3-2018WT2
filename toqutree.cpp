@@ -84,6 +84,11 @@ return size;
 
 
 toqutree::Node * toqutree::buildTree(PNG * im, int k) {
+	//First we need to solve for the lowest entropy chose that as SE top right
+	//Then split the table like that with SE((x) being lowest Entropy + 2^k-1 being the width and SE(Y)- 2^k-1 being the length
+	//Then we determine the difference between 0 and SE minus 2^k-1 to decide the amount of pixels on the bottom for NE
+	//Rinse and repeat for the rest
+
 
 /* your code here */
 

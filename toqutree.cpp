@@ -63,43 +63,80 @@ root = buildTree(subimage,k);
 }
 
 int toqutree::size() {
-int size = 1; //This node
-if (*NW == NULL && *SW = NULL && *SE == NULL && *NE == NULL){
-	return size = size + 0;
-}
-if (*NW != NULL){
-	size = size + NW.size();
-}
-if (*NE != NULL){
-	size = size + NE.size();
-}
-if (*SW != NULL){
-	size = size + SW.size();
-}
-if (*SE != NULL){
-	size = size + SE.size();
-}
+	int size = 1; //This node
+	if (*NW == NULL && *SW = NULL && *SE == NULL && *NE == NULL){
+		return size = size + 0;
+	}
+	if (*NW != NULL){
+		size = size + NW.size();
+	}
+	if (*NE != NULL){
+		size = size + NE.size();
+	}
+	if (*SW != NULL){
+		size = size + SW.size();
+	}
+	if (*SE != NULL){
+		size = size + SE.size();
+	}
 return size;
 }
 
 
 toqutree::Node * toqutree::buildTree(PNG * im, int k) {
+	/* your code here */
+
+	// Note that you will want to practice careful memory use
+	// In this function. We pass the dynamically allocated image
+	// via pointer so that it may be released after it is used .
+	// similarly, at each level of the tree you will want to 
+	// declare a dynamically allocated stats object, and free it
+	// once you've used it to choose a split point, and calculate
+	// an average.
+
 	//First we need to solve for the lowest entropy chose that as SE top right
 	//Then split the table like that with SE((x) being lowest Entropy + 2^k-1 being the width and SE(Y)- 2^k-1 being the length
 	//Then we determine the difference between 0 and SE minus 2^k-1 to decide the amount of pixels on the bottom for NE
 	//Rinse and repeat for the rest
 
+	pair<int,int> optimal;
+	double minEntropy;
 
-/* your code here */
+	int areaHeight = *im.height()/2;
+	int areaLength = *im.length()/2;
 
-// Note that you will want to practice careful memory use
-// In this function. We pass the dynamically allocated image
-// via pointer so that it may be released after it is used .
-// similarly, at each level of the tree you will want to 
-// declare a dynamically allocated stats object, and free it
-// once you've used it to choose a split point, and calculate
-// an average.
+	//Upper Left Pair
+	pair<int,int> zoneUpperLeft = make_pair((*im.length()/4), (*im.height()/4));
 
+	//Lower Left Pair
+	pair<int,int> zoneLowerRight = make_pair((*im.length()*3/4), (*im.height()*3/4));
+
+
+	for (int i = zoneUpperLeft.first; i < zoneLowerRight.first; i++){
+		for (int j = zoneUpperLeft.second; i < zoneLowerRight.second; i++){
+
+			double totalAvgEntropy;
+			//Need to instantiate Stats
+			double zone1 =  entropy(pair<int,int>, pair<int,int>);
+			double zone2 =  entropy(pair<int,int>, pair<int,int>);
+			double zone3 =  entropy(pair<int,int>, pair<int,int>);
+			double zone4 =  entropy(pair<int,int>, pair<int,int>);
+			//TotalEntropy
+			totalAvgEntropy = (zone1 + zone2 + zone3 + zone4)/4;
+			if (minEntropy == NULL){
+				minEntropy = totalAvgEntropy;
+				optimal = make_pair(i, j);
+			}
+			else if(minEntropy > totalAvgEntropy){
+				minEntropy = totalAvgEntropy;
+				optimal = make_pair(i, j);
+			}
+
+		}
+	}
+	//Now we do stuff that creates the new node with the coodinates and stuff
+	//IDK RN
+	return NULL;
 }
 
 PNG toqutree::render(){

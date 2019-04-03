@@ -41,27 +41,23 @@ toqutree::toqutree(PNG & imIn, int k){
 /* in imIn and uses it to build a quadtree. It may assume  */
 /* that imIn is large enough to contain an image of that size. */
 
-/* your code here */
+// // Creating the subimage
+// PNG subimage(pow(2,k),pow(2,k));
+// int center = imIn.width()/2;
+// // Getting the right coordinates for the subimage square
+// int upleft = center - pow(2,k)/2;
+// int upright = center + pow(2,k)/2;
 
-// Creating the subimage
-PNG subimage(pow(2,k),pow(2,k));
-int center = imIn.width()/2;
-// Getting the right coordinates for the subimage square
-int upleft = center - pow(2,k)/2;
-int upright = center + pow(2,k)/2;
+// // Change the pixel by using getPixel, and then change the pixel 
+// for(int x = 0; x < pow(2,k); x++){
+// 	for(int y = 0; y < pow(2,k); y++){
+// 		HSLAPixel* pixel = subimage.getPixel(x,y);
+// 		HSLAPixel* originalpixel = imIn.getPixel(upleft + x, upleft + y);
+// 		*pixel = *originalpixel; 
+// 	}
+// }
 
-// Change the pixel by using getPixel, and then change the pixel 
-for(int x = 0; x < pow(2,k); x++){
-	for(int y = 0; y < pow(2,k); y++){
-		HSLAPixel* pixel = subimage.getPixel(x,y);
-		HSLAPixel* originalpixel = imIn.getPixel(upleft + x, upleft + y);
-		*pixel = *originalpixel; 
-	}
-}
-
-root = buildTree(subimage,k);
-
-/* your code here */
+// root = buildTree(subimage,k);
 
 }
 
@@ -115,7 +111,6 @@ PNG toqutree::render(){
 // quadtree, instead.
 
 /* your code here */
-	return NULL;
 }
 
 /* oops, i left the implementation of this one in the file! */

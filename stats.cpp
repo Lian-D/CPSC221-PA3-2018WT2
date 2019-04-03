@@ -11,9 +11,11 @@ initializeLum(im);
 initializeHist(im);
 }
 
+// cout << "stats.cpp: " << __LINE__ << endl;
 
 void stats::initializeHueX(PNG& im){
       // fill in the vector with the values
+    //   cout << "stats.cpp: " << __LINE__ << endl;
     for(int x = 0; x < im.width(); x++){
         vector<double> vertical;
         for(int y = 0; y < im.height(); y++){
@@ -45,6 +47,7 @@ void stats::initializeHueX(PNG& im){
 
 void stats::initializeHueY(PNG& im){
       // fill in the vector with the values
+    //   cout << "stats.cpp: " << __LINE__ << endl;
     for(int x = 0; x < im.width(); x++){
         vector<double> vertical;
         for(int y = 0; y < im.height(); y++){
@@ -76,6 +79,7 @@ void stats::initializeHueY(PNG& im){
 
 void stats::initializeSat(PNG& im){
       // fill in the vector with the values
+    //   cout << "stats.cpp: " << __LINE__ << endl;
     for(int x = 0; x < im.width(); x++){
         vector<double> vertical;
         for(int y = 0; y < im.height(); y++){
@@ -85,6 +89,7 @@ void stats::initializeSat(PNG& im){
         sumSat.push_back(vertical);
     }
     // Then rewrite the vector to be the cumulative sum
+    // cout << "stats.cpp: " << __LINE__ << endl;
      for(int x1 = 0; x1 < im.width(); x1++){
         for(int y1 = 0; y1 < im.height(); y1++){
             // Initializing the sum of the first row of x and first row of y
@@ -106,6 +111,7 @@ void stats::initializeSat(PNG& im){
 }
 
 void stats::initializeLum(PNG& im){
+    // cout << "stats.cpp: " << __LINE__ << endl;
       // fill in the vector with the values
     for(int x = 0; x < im.width(); x++){
         vector<double> vertical;
@@ -139,7 +145,7 @@ void stats::initializeLum(PNG& im){
 void stats::initializeHist(PNG& im){
 
     // Initializing the histogram, and starting it off by filling everything with zero
-    
+    // cout << "stats.cpp: " << __LINE__ << endl;
     for(int x1 = 0; x1 < im.width(); x1++){
         vector<vector<int>> vertical2;
         for(int y1 = 0; y1 < im.height(); y1++){
@@ -155,10 +161,16 @@ void stats::initializeHist(PNG& im){
     // Now we construct the histogram woweeee
     for(int x2 = 0; x2 < im.width(); x2++){
         for(int y2 = 0; y2 < im.height(); y2++){
+            
             HSLAPixel* pixel = im.getPixel(x2,y2);
             // Here, we add one to the appropriate bin
+
             hist[x2][y2][(pixel->h)/10] = hist[x2][y2][(pixel->h)/10] + 1;
             // Going to construct the histograms for each pixel by adding the bins together 
+            // cout << "print hist y" << endl;
+            // cout << hist[0].size() << endl;
+            // cout << "print hist x " << endl;
+            // cout << hist.size() << endl;
 
             // This is the case where x is 0, so to get the histograms, we simply add the current histogram to the one above it
             if( x2 == 0 && y2 >= 1){
@@ -184,9 +196,12 @@ void stats::initializeHist(PNG& im){
 }
 
 
+// given a rectangle, return the number of pixels in the rectangle
+	/* @param ul is (x,y) of the upper left corner of the rectangle 
+	* @param lr is (x,y) of the lower right corner of the rectangle */
 long stats::rectArea(pair<int,int> ul, pair<int,int> lr){
-
- // First case is where the rectangle area is normal and does not wrap
+    // cout << "stats.cpp: " << __LINE__ << endl;
+    // First case is where the rectangle area is normal and does not wrap
     if(lr.first > ul.first && lr.second > ul.second){
         long areacase1;
         areacase1 = (lr.first - ul.first + 1) * (lr.second - ul.second + 1);
@@ -210,61 +225,347 @@ long stats::rectArea(pair<int,int> ul, pair<int,int> lr){
         areacase4 = ((hist.size() - ul.first) + lr.first + 1) * (lr.second + (hist[0].size() - ul.second + 1));
         return areacase4;
     }
+    if(ul.first == lr.first && ul.second == lr.second){
+        int ha = 1;
+        return ha;
+    }
 
 /* your code here */
-
 
 }
 
 HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
-// Assuming that getAvg is always called with UL being 0,0
-    if(lr.first > ul.first && lr.second > ul.second){
+   // Case 1: getAvg is called with 0,0 NO WRAPPING
+   // Case 2: getAvg is called with with x and y both greater than 0,0 NO WRAPPING
+   // Case 3: getAvg is called with x = 0 and y!=0 NO WRAPPING
+   // Case 4: getAvg is called with y = 0 and x !=0 NO WRAPPING
+   // Case 5: getAvg is called with y = 0  X WRAPPING
+   // Case 6: getAvg is called with y != 0 X WRAPPING
+   // Case 7: getAvg is called with x = 0 and y != 0 Y WRAPPING
+   // Case 8: getAvg is called with x !=0  Y WRAPPING
+   // Case 9: double wrapping
+   // We know that lr can never be 0,0 when considering both wrapping case
+   // We also know that ul.first can't be the edge
+   // We also know that lr.first can't be the edge either 
+   // So it seems like the edge cases are at minimum lr = 1,1
+   // Then it seems like we only need one case for double wrapping and that is general wrapping
+  // Assuming that getAvg is always called with UL being 0,0 
+  // CASE 1:
+    // When ul x,y are 0,0
+    cout << "stats.cpp: " << __LINE__ << endl;
         if(ul.first == 0 && ul.second == 0){
+            cout << "is it here?" << endl;
             double avgHueX = sumHueX[lr.first][lr.second]/rectArea(ul,lr);
             double avgHueY = sumHueY[lr.first][lr.second]/rectArea(ul,lr);
             double trueavg = atan2(avgHueY,avgHueX) * 180/PI;
-            cout << "yeet yeet" << endl;
+            // cout << "trueavg calculated" << endl;
             if(trueavg < 0){
            trueavg = trueavg + 360;
             }
             double satavg = sumSat[lr.first][lr.second]/rectArea(ul,lr);
             double lumavg = sumLum[lr.first][lr.second]/rectArea(ul,lr);
+            // cout << "satavg and lumavg passed" << endl;
             HSLAPixel pixel(trueavg,satavg,lumavg,1.0);
             return pixel;
         }
-        else{
-       double xhueA = sumHueX[lr.first][lr.second];
-       double yhueA = sumHueY[lr.first][lr.second];
-       double xhueB = sumHueX[ul.first-1][lr.second];
-       double yhueB = sumHueY[ul.first-1][lr.second];
-       double xhueC = sumHueX[lr.first][ul.second-1];
-       double yhueC = sumHueY[lr.first][ul.second-1];
-       double xhueD = sumHueX[ul.first-1][ul.second-1];
-       double yhueD = sumHueY[ul.first-1][ul.second-1];
+        // CASE 2: getAvg is called with with x and y both greater than 0,0 NO WRAPPING
+        if(ul.first < lr.first && ul.second < lr.second){
+            cout << "is it here2?" << endl;
+            if(ul.first != 0 && lr.first != 0){
+                double xhueA = sumHueX[lr.first][lr.second];
+                double yhueA = sumHueY[lr.first][lr.second];
+                double xhueB = sumHueX[ul.first-1][lr.second];
+                double yhueB = sumHueY[ul.first-1][lr.second];
+                double xhueC = sumHueX[lr.first][ul.second-1];
+                double yhueC = sumHueY[lr.first][ul.second-1];
+                double xhueD = sumHueX[ul.first-1][ul.second-1];
+                double yhueD = sumHueY[ul.first-1][ul.second-1];
+                
 
-       double avgHueX = xhueA - xhueB - xhueC + xhueD;
-       double avgHueY = yhueA - yhueB - yhueC + yhueD;
+                double avgHueX = (xhueA - xhueB - xhueC + xhueD)/rectArea(ul,lr);
+                double avgHueY = (yhueA - yhueB - yhueC + yhueD)/rectArea(ul,lr);
 
-       double trueavg = atan2(avgHueY,avgHueX) * 180/PI ; 
+                double trueavg = atan2(avgHueY,avgHueX) * 180/PI ; 
 
-       if(trueavg < 0){
-           trueavg = trueavg + 360;
-       }
+                    if(trueavg < 0){
+                        trueavg = trueavg + 360;
+                    }
 
-        double satavg = sumSat[lr.first][lr.second] - sumSat[ul.first-1][lr.second] - sumSat[lr.first][ul.second-1] 
-        + sumSat[ul.first-1][ul.second-1];
+                double satavg = (sumSat[lr.first][lr.second] - sumSat[ul.first-1][lr.second] - sumSat[lr.first][ul.second-1] 
+                + sumSat[ul.first-1][ul.second-1])/rectArea(ul,lr);
 
-        double lumavg = sumLum[lr.first][lr.second] - sumLum[ul.first-1][lr.second] - sumLum[lr.first][ul.second-1] 
-        + sumLum[ul.first-1][ul.second-1];
+                double lumavg = (sumLum[lr.first][lr.second] - sumLum[ul.first-1][lr.second] - sumLum[lr.first][ul.second-1] 
+                + sumLum[ul.first-1][ul.second-1])/rectArea(ul,lr);
 
-       HSLAPixel returnpixel(trueavg,satavg,lumavg,1.0);
-       return returnpixel;
+                HSLAPixel returnpixel(trueavg,satavg,lumavg,1.0);
+                return returnpixel;
+            }
+            // Case 3: getAvg is called with x = 0 and y!=0 NO WRAPPING
+            if(ul.first == 0 && ul.second != 0){
+                cout << "is it here3?" << endl;
+                double xhueA = sumHueX[lr.first][lr.second];
+                double yhueA = sumHueY[lr.first][lr.second];
+                double xhueC = sumHueX[lr.first][ul.second-1];
+                double yhueC = sumHueY[lr.first][ul.second-1];
+
+
+                 double avgHueX = (xhueA - xhueC)/rectArea(ul,lr);
+                double avgHueY = (yhueA - yhueC)/rectArea(ul,lr);
+
+                double trueavg = atan2(avgHueY,avgHueX) * 180/PI ; 
+
+                    if(trueavg < 0){
+                        trueavg = trueavg + 360;
+                    }
+
+                double satavg = (sumSat[lr.first][lr.second] - sumSat[lr.first][ul.second-1])/rectArea(ul,lr);
+
+                double lumavg = (sumLum[lr.first][lr.second] - sumLum[lr.first][ul.second-1])/rectArea(ul,lr);
+
+                HSLAPixel returnpixel(trueavg,satavg,lumavg,1.0);
+                return returnpixel;
+            }
+            // Case 4: getAvg is called with y = 0 and x !=0 NO WRAPPING
+            if(ul.first != 0 && ul.second == 0){
+                cout << "is it here4?" << endl;
+                double xhueA = sumHueX[lr.first][lr.second];
+                double yhueA = sumHueY[lr.first][lr.second];
+                double xhueB = sumHueX[ul.first-1][lr.second];
+                double yhueB = sumHueY[ul.first-1][lr.second];
+        
+
+                double avgHueX = (xhueA - xhueB)/rectArea(ul,lr);
+                double avgHueY = (yhueA - yhueB)/rectArea(ul,lr);
+
+                double trueavg = atan2(avgHueY,avgHueX) * 180/PI ; 
+
+                    if(trueavg < 0){
+                        trueavg = trueavg + 360;
+                    }
+
+                double satavg = (sumSat[lr.first][lr.second] - sumSat[ul.first-1][lr.second])/rectArea(ul,lr);
+
+                double lumavg = (sumLum[lr.first][lr.second] - sumLum[ul.first-1][lr.second])/rectArea(ul,lr);
+
+                HSLAPixel returnpixel(trueavg,satavg,lumavg,1.0);
+                return returnpixel;
+            }
         }
+        // Case 5: getAvg is called with y = 0  X WRAPPING
+        if(ul.first > lr.first && ul.second < lr.second){
+            cout << "is it here5?" << endl;
+            if(ul.second == 0 ){
+             double xhueA = sumHueX[lr.first][lr.second];
+             double yhueA = sumHueY[lr.first][lr.second];
+             double xhueB = sumHueX[hist.size()-1][lr.second];
+             double yhueB = sumHueY[hist.size()-1][lr.second];
+             double xhueC = sumHueX[ul.first-1][lr.second];
+             double yhueC = sumHueY[ul.first-1][lr.second];
+             
+
+                double avgHueX = (xhueB - xhueC + xhueA)/rectArea(ul,lr);
+                double avgHueY = (yhueB - yhueC + yhueA)/rectArea(ul,lr);
+
+                double trueavg = atan2(avgHueY,avgHueX) * 180/PI ; 
+
+                    if(trueavg < 0){
+                        trueavg = trueavg + 360;
+                    }
+
+                double satavg = (sumSat[hist.size()-1][lr.second] - sumSat[ul.first-1][lr.second] + sumSat[lr.first][lr.second])/rectArea(ul,lr);
+
+                double lumavg = (sumLum[hist.size()-1][lr.second] - sumLum[ul.first-1][lr.second] + sumLum[lr.first][lr.second])/rectArea(ul,lr);
+
+                HSLAPixel returnpixel(trueavg,satavg,lumavg,1.0);
+                return returnpixel;
+        }
+        }
+        //// Case 6: getAvg is called with y != 0 X WRAPPING
+        if(ul.first > lr.first && ul.second < lr.second){
+            cout << "is it here6?" << endl;
+            double xhueA = sumHueX[lr.first][lr.second];
+             double yhueA = sumHueY[lr.first][lr.second];
+             double xhueB = sumHueX[hist.size()-1][lr.second];
+             double yhueB = sumHueY[hist.size()-1][lr.second];
+             double xhueC = sumHueX[ul.first-1][lr.second];
+             double yhueC = sumHueY[ul.first-1][lr.second];
+             double xhueD = sumHueX[hist.size()-1][ul.second-1];
+             double yhueD = sumHueY[hist.size()-1][ul.second-1];
+             double xhueE = sumHueX[ul.first-1][ul.second-1];
+             double yhueE = sumHueY[ul.first-1][ul.second-1];
+             double xhueF = sumHueX[lr.first][ul.second-1];
+             double yhueF = sumHueY[lr.first][ul.second-1];
+
+                double avgHueX = (xhueB - xhueC + xhueA + xhueE - xhueD - xhueF)/rectArea(ul,lr);
+                double avgHueY = (yhueB - yhueC + yhueA + yhueE - yhueD - yhueF)/rectArea(ul,lr);
+
+                double trueavg = atan2(avgHueY,avgHueX) * 180/PI ; 
+
+                    if(trueavg < 0){
+                        trueavg = trueavg + 360;
+                    }
+
+                double satavg = (sumSat[hist.size()-1][lr.second] - sumSat[ul.first-1][lr.second]
+                 + sumSat[lr.first][lr.second] + sumSat[ul.first-1][ul.second-1]- sumSat[hist.size()-1][ul.second-1]
+                 - sumSat[lr.first][ul.second-1])/rectArea(ul,lr);
+
+                double lumavg = (sumLum[hist.size()-1][lr.second] - sumLum[ul.first-1][lr.second]
+                 + sumLum[lr.first][lr.second] + sumLum[ul.first-1][ul.second-1]- sumLum[hist.size()-1][ul.second-1]
+                 -sumLum[lr.first][ul.second-1])/rectArea(ul,lr);
+
+                HSLAPixel returnpixel(trueavg,satavg,lumavg,1.0);
+                return returnpixel;
+        }
+        // Case 7: getAvg is called with x = 0 and y != 0 Y WRAPPING
+        if(ul.first < lr.second && ul.second > lr.second){
+            cout << "being called correctly?" << endl;
+            if(ul.first == 0){
+             double xhueA = sumHueX[lr.first][lr.second];
+             double yhueA = sumHueY[lr.first][lr.second];
+             double xhueB = sumHueX[lr.first][hist[0].size()-1];
+             double yhueB = sumHueY[lr.first][hist[0].size()-1];
+             double xhueC = sumHueX[lr.first][ul.second-1];
+             double yhueC = sumHueY[lr.first][ul.second-1];
+            
+            double avgHueX = (xhueB - xhueC + xhueA)/rectArea(ul,lr);
+            double avgHueY = (yhueB - yhueC + yhueA)/rectArea(ul,lr);
+
+            double trueavg = atan2(avgHueY,avgHueX) * 180/PI ; 
+
+                    if(trueavg < 0){
+                        trueavg = trueavg + 360;
+                    }
+
+            double satavg = (sumSat[lr.first][hist[0].size()-1] - sumSat[lr.first][ul.second-1] + sumSat[lr.first][lr.second])/rectArea(ul,lr);
+
+            double lumavg = (sumLum[lr.first][hist[0].size()-1] - sumLum[lr.first][ul.second-1] + sumLum[lr.first][lr.second])/rectArea(ul,lr);
+
+            HSLAPixel returnpixel(trueavg,satavg,lumavg,1.0);
+            return returnpixel;
+            }
+            else if(ul.first != 0){
+                cout << "called y wrapping no x zero" << endl;
+             double xhueA = sumHueX[lr.first][lr.second];
+             double yhueA = sumHueY[lr.first][lr.second];
+             double xhueB = sumHueX[lr.first][hist[0].size()-1];
+             double yhueB = sumHueY[lr.first][hist[0].size()-1];
+             double xhueC = sumHueX[lr.first][ul.second-1];
+             double yhueC = sumHueY[lr.first][ul.second-1];
+             double xhueD = sumHueX[ul.first-1][hist[0].size()-1];
+             double yhueD = sumHueY[ul.first-1][hist[0].size()-1];
+             double xhueE = sumHueX[ul.first-1][ul.second-1];
+             double yhueE = sumHueY[ul.first-1][ul.second-1];
+
+             double avgHueX = (xhueB - xhueC - xhueD + xhueE + xhueA)/rectArea(ul,lr);
+             double avgHueY = (yhueB - yhueC - yhueD + yhueE + yhueA)/rectArea(ul,lr);
+
+             double trueavg = atan2(avgHueY,avgHueX) * 180/PI ; 
+
+                    if(trueavg < 0){
+                        trueavg = trueavg + 360;
+                    }
+            double satavg = (sumSat[lr.first][hist[0].size()-1] - sumSat[lr.first][ul.second-1] - sumSat[ul.first-1][hist[0].size()-1]
+            + sumSat[ul.first-1][ul.second-1] + sumSat[lr.first][lr.second])/rectArea(ul,lr);
+
+            double lumavg = (sumLum[lr.first][hist[0].size()-1] - sumLum[lr.first][ul.second-1] - sumLum[ul.first-1][hist[0].size()-1]
+            + sumLum[ul.first-1][ul.second-1] + sumLum[lr.first][lr.second])/rectArea(ul,lr);
+
+            HSLAPixel returnpixel(trueavg,satavg,lumavg,1.0);
+            return returnpixel;
+ 
+            }
+        }
+        // If ul and lr are the same;
+        if(ul.first == lr.first && ul.second == lr.second){
+            if (ul.first == 0 && ul.second == 0){
+                double avgHueX = sumHueX[0][0];
+                double avgHueY = sumHueY[0][0];
+                double trueavg = atan2(avgHueY,avgHueX) * 180/PI ; 
+
+                    if(trueavg < 0){
+                        trueavg = trueavg + 360;
+                    }
+
+                double satavg = sumSat[0][0];
+                double lumavg = sumSat[0][0];
+                HSLAPixel returnpixel(trueavg,satavg,lumavg,1.0);
+                return returnpixel;
+            }
+            else if(ul.first == 0 && ul.second != 0){
+                double xhueA = sumHueX[lr.first][lr.second];
+                double yhueA = sumHueY[lr.first][lr.second];
+                double xhueB = sumHueX[lr.first][lr.second-1];
+                double yhueB = sumHueY[lr.first][lr.second-1];
+
+                double avgHueX = xhueA - xhueB;
+                double avgHueY = yhueA - yhueB;
+                
+                double trueavg = atan2(avgHueY,avgHueX) * 180/PI ; 
+
+                    if(trueavg < 0){
+                        trueavg = trueavg + 360;
+                    }
+                double satavg = sumSat[lr.first][lr.second] - sumSat[lr.first][lr.second-1];
+                double lumavg = sumSat[lr.first][lr.second] - sumSat[lr.first][lr.second-1];
+
+                HSLAPixel returnpixel(trueavg,satavg,lumavg,1.0);
+                return returnpixel;    
+            }
+            else if(ul.first != 0 && ul.second == 0){
+                double xhueA = sumHueX[lr.first][lr.second];
+                double yhueA = sumHueY[lr.first][lr.second];
+                double xhueB = sumHueX[lr.first-1][lr.second];
+                double yhueB = sumHueY[lr.first-1][lr.second];
+
+                double avgHueX = xhueA - xhueB;
+                double avgHueY = yhueA - yhueB;
+                
+                double trueavg = atan2(avgHueY,avgHueX) * 180/PI ; 
+
+                    if(trueavg < 0){
+                        trueavg = trueavg + 360;
+                    }
+                double satavg = sumSat[lr.first][lr.second] - sumSat[lr.first-1][lr.second];
+                double lumavg = sumSat[lr.first][lr.second] - sumSat[lr.first-1][lr.second];
+
+                HSLAPixel returnpixel(trueavg,satavg,lumavg,1.0);
+                return returnpixel;    
+            }
+            else{
+                cout << "is it here?theendxd" << endl;
+                double xhueA = sumHueX[lr.first][lr.second];
+                double yhueA = sumHueY[lr.first][lr.second];
+                double xhueB = sumHueX[lr.first-1][lr.second];
+                double yhueB = sumHueY[lr.first-1][lr.second];
+                double xhueC = sumHueX[lr.first][lr.second-1];
+                double yhueC = sumHueY[lr.first][lr.second-1];
+                double xhueD = sumHueX[lr.first-1][lr.second-1];
+                double yhueD = sumHueY[lr.first-1][lr.second-1];
+
+                double avgHueX = xhueA - xhueB - xhueC + xhueD;
+                double avgHueY = yhueA - yhueB - yhueC + yhueD;
+                
+                double trueavg = atan2(avgHueY,avgHueX) * 180/PI ; 
+
+                    if(trueavg < 0){
+                        trueavg = trueavg + 360;
+                    }
+                 double satavg = sumSat[lr.first][lr.second] - sumSat[lr.first-1][lr.second] - sumSat[lr.first][lr.second-1] 
+                + sumSat[lr.first-1][lr.second-1];
+
+                 double lumavg = sumLum[lr.first][lr.second] - sumLum[lr.first-1][lr.second] - sumLum[lr.first][lr.second-1] 
+                + sumLum[lr.first-1][lr.second-1];
+
+                HSLAPixel returnpixel(trueavg,satavg,lumavg,1.0);
+                return returnpixel;
+            }
+
+        }
+        
     }
-}
 
 vector<int> stats::buildHist(pair<int,int> ul, pair<int,int> lr){
-// non zero normal case 
+    // non zero normal case 
     if(ul.first != 0 && ul.second != 0){
         vector<int> oghistogram = hist[lr.first][lr.second];
         vector<int> blhistogram = hist[ul.first-1][lr.second];
@@ -302,6 +603,7 @@ vector<int> stats::buildHist(pair<int,int> ul, pair<int,int> lr){
 
 // takes a distribution and returns entropy
 // partially implemented so as to avoid rounding issues.
+// is already done huheuheuheuh
 double stats::entropy(vector<int> & distn,int area){
 
     double entropy = 0.;
@@ -321,10 +623,12 @@ double stats::entropy(vector<int> & distn,int area){
 double stats::entropy(pair<int,int> ul, pair<int,int> lr){
 
 /* your code here */
+
     int area = rectArea(ul,lr);
     
     vector<int> histogram = buildHist(ul,lr);
     
     return entropy(histogram,area);
+
 
 }

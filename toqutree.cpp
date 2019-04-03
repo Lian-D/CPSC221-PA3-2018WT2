@@ -158,7 +158,7 @@ PNG toqutree::render(){
 // quadtree, instead.
 
 /* your code here */
-
+	return NULL;
 }
 
 /* oops, i left the implementation of this one in the file! */
@@ -199,6 +199,7 @@ void toqutree::clear(Node * & curr){
 /* done */
 /* called by assignment operator and copy constructor */
 toqutree::Node * toqutree::copy(const Node * other) {
+	return NULL;
 
 /* your code here */
 }

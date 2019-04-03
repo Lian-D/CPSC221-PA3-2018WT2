@@ -31,6 +31,10 @@ toqutree & toqutree::operator=(const toqutree & rhs){
 	return *this;
 }
 
+
+//Debug Sheet
+//Compiles: yes
+//Working: not sure, but most likely yes
 toqutree::toqutree(PNG & imIn, int k){ 
 
 /* This constructor grabs the 2^k x 2^k sub-image centered */
@@ -38,7 +42,6 @@ toqutree::toqutree(PNG & imIn, int k){
 /* that imIn is large enough to contain an image of that size. */
 
 /* your code here */
-// Node node = new Node(ctr);
 
 // Creating the subimage
 PNG subimage(pow(2,k),pow(2,k));
@@ -62,95 +65,44 @@ root = buildTree(subimage,k);
 
 }
 
+//Debug Sheet
+//Compiles: yes
+//Working: internally yes
 int toqutree::size() {
 	int size = 1; //This node
-	if (Node->NW == NULL && Node->SW == NULL && Node->SE == NULL && Node->NE == NULL){
+	if (root->NW == NULL && root->SW == NULL && root->SE == NULL && root->NE == NULL){
 		return size = size + 0;
 	}
-	if (Node->NW != NULL){
-		size = size + NW.size();
+	if (root->NW != NULL){
+		size = size + root->NW.size();
 	}
-	if (Node->NE != NULL){
-		size = size + NE.size();
+	if (root->NE != NULL){
+		size = size + root->NE.size();
 	}
-	if (Node->SW != NULL){
-		size = size + SW.size();
+	if (root->SW != NULL){
+		size = size + root->SW.size();
 	}
-	if (Node->SE != NULL){
-		size = size + SE.size();
+	if (root->SE != NULL){
+		size = size + root->SE.size();
 	}
 return size;
 }
 
-
+//Debug Sheet
+//Compiles: no
+//Working: no
 toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 	/* your code here */
 
-	// Note that you will want to practice careful memory use
-	// In this function. We pass the dynamically allocated image
-	// via pointer so that it may be released after it is used .
-	// similarly, at each level of the tree you will want to 
-	// declare a dynamically allocated stats object, and free it
-	// once you've used it to choose a split point, and calculate
-	// an average.
-
-	//First we need to solve for the lowest entropy chose that as SE top right
-	//Then split the table like that with SE((x) being lowest Entropy + 2^k-1 being the width and SE(Y)- 2^k-1 being the length
-	//Then we determine the difference between 0 and SE minus 2^k-1 to decide the amount of pixels on the bottom for NE
-	//Rinse and repeat for the rest
-
-	//Optimal entropy and points
+	//Optimal entropy and points for deciding the split
 	pair<int,int> optimal;
 	double minEntropy;
-
-	//The area of the square we are checking
-	int areaHeight = *im.height()/2;
-	int areaLength = *im.length()/2;
-
-	//Upper Left Pair
-	pair<int,int> zoneUpperLeft = make_pair((*im.length()/4), (*im.height()/4));
-
-	//Lower Left Pair
-	pair<int,int> zoneLowerRight = make_pair((*im.length()*3/4), (*im.height()*3/4));
-
-	//Possible Error here for new, not sure yet.
-	Stats* stats = new Stats(im);
-
-
-	for (int i = zoneUpperLeft.first; i < zoneLowerRight.first; i++){
-		for (int j = zoneUpperLeft.second; i < zoneLowerRight.second; i++){
-			
-			double totalAvgEntropy;
-			//Need to instantiate Stats
-			//This should check the zones possible for this int.
-
-			double zone1 =  stats.entropy(pair<int,int>, pair<int,int>); //NW
-			double zone2 =  stats.entropy(pair<int,int>, pair<int,int>); //NE
-
-			double zone3 =  stats.entropy(pair<int,int>, pair<int,int>); //SW
-			double zone4 =  stats.entropy(pair<int,int>, pair<int,int>); //SE
-			
-			//Total Entropy
-			totalAvgEntropy = (zone1 + zone2 + zone3 + zone4)/4;
-
-			//If we don't have a min Entropy yet (only for first case)
-			if (minEntropy == NULL){
-				minEntropy = totalAvgEntropy;
-				optimal = make_pair(i, j);
-			} //If smaller, then we change it
-			else if(minEntropy > totalAvgEntropy){
-				minEntropy = totalAvgEntropy;
-				optimal = make_pair(i, j);
-			}
-
-		}
-	}
-	//Now we do stuff that creates the new node with the coodinates and stuff
-	//IDK RN
-	delete stats;
 	return NULL;
 }
 
+//Debug Sheet
+//Compiles: yes
+//Working: no
 PNG toqutree::render(){
 
 // My algorithm for this problem included a helper function
@@ -168,24 +120,28 @@ void toqutree::prune(double tol){
 
 }
 
+//Debug Sheet
+//Compiles: yes
+//Working: yes
+
 /* called by destructor and assignment operator*/
 void toqutree::clear(Node * & curr){
 
 	//Run through conds to slowly delete the node
-	if (*NW != NULL){
-		clear(*NW);
+	if (root->NW != NULL){
+		clear(root->NW);
 	}
-	if (*NE != NULL){
-		clear(*NE);
+	if (root->NE != NULL){
+		clear(root->NE);
 	}
-	if (*SW != NULL){
-		clear(*SW);
+	if (root->SW != NULL){
+		clear(root->SW);
 	}
-	if (*SE != NULL){
-		clear(*SE);
+	if (root->SE != NULL){
+		clear(root->SE);
 	}
 
-	if (*NW == NULL && *SW = NULL && *SE == NULL && *NE == NULL){
+	if (root->NW == NULL && root->SW == NULL && root->SE == NULL && root->NE == NULL){
 		delete curr;
 		curr = NULL;
 	}
@@ -196,12 +152,26 @@ void toqutree::clear(Node * & curr){
 	//Everything should be deleted now
 }
 
-/* done */
+//Debug Sheet
+//Compiles: no
+//Working: no
+
 /* called by assignment operator and copy constructor */
 toqutree::Node * toqutree::copy(const Node * other) {
-	return NULL;
+	if (other != NULL){
+		Node* newNode = new Node(other->center, other->dimension, other->avg);
 
-/* your code here */
+		newNode->NW = copy(other->NW);
+		newNode->NE = copy(other->NE);
+		newNode->SW = copy(other->SW);
+		newNode->SE = copy(other->SE);
+
+		return newNode;
+	}
+	else {
+		return NULL;
+	}
+
 }
 
 

@@ -64,19 +64,19 @@ root = buildTree(subimage,k);
 
 int toqutree::size() {
 	int size = 1; //This node
-	if (NW == NULL && SW == NULL && SE == NULL && NE == NULL){
+	if (Node->NW == NULL && Node->SW == NULL && Node->SE == NULL && Node->NE == NULL){
 		return size = size + 0;
 	}
-	if (NW != NULL){
+	if (Node->NW != NULL){
 		size = size + NW.size();
 	}
-	if (NE != NULL){
+	if (Node->NE != NULL){
 		size = size + NE.size();
 	}
-	if (SW != NULL){
+	if (Node->SW != NULL){
 		size = size + SW.size();
 	}
-	if (SE != NULL){
+	if (Node->SE != NULL){
 		size = size + SE.size();
 	}
 return size;

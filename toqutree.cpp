@@ -152,7 +152,7 @@ PNG toqutree::render(){
 /* oops, i left the implementation of this one in the file! */
 void toqutree::prune(double tol){
 
-	prune(root,tol);
+	// prune(root,tol);
 
 }
 

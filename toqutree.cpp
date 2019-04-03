@@ -99,9 +99,11 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 	//Then we determine the difference between 0 and SE minus 2^k-1 to decide the amount of pixels on the bottom for NE
 	//Rinse and repeat for the rest
 
+	//Optimal entropy and points
 	pair<int,int> optimal;
 	double minEntropy;
 
+	//The area of the square we are checking
 	int areaHeight = *im.height()/2;
 	int areaLength = *im.length()/2;
 
@@ -111,22 +113,31 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 	//Lower Left Pair
 	pair<int,int> zoneLowerRight = make_pair((*im.length()*3/4), (*im.height()*3/4));
 
+	//Possible Error here for new, not sure yet.
+	Stats* stats = new Stats(im);
+
 
 	for (int i = zoneUpperLeft.first; i < zoneLowerRight.first; i++){
 		for (int j = zoneUpperLeft.second; i < zoneLowerRight.second; i++){
-
+			
 			double totalAvgEntropy;
 			//Need to instantiate Stats
-			double zone1 =  entropy(pair<int,int>, pair<int,int>);
-			double zone2 =  entropy(pair<int,int>, pair<int,int>);
-			double zone3 =  entropy(pair<int,int>, pair<int,int>);
-			double zone4 =  entropy(pair<int,int>, pair<int,int>);
-			//TotalEntropy
+			//This should check the zones possible for this int.
+
+			double zone1 =  stats.entropy(pair<int,int>, pair<int,int>); //NW
+			double zone2 =  stats.entropy(pair<int,int>, pair<int,int>); //NE
+
+			double zone3 =  stats.entropy(pair<int,int>, pair<int,int>); //SW
+			double zone4 =  stats.entropy(pair<int,int>, pair<int,int>); //SE
+			
+			//Total Entropy
 			totalAvgEntropy = (zone1 + zone2 + zone3 + zone4)/4;
+
+			//If we don't have a min Entropy yet (only for first case)
 			if (minEntropy == NULL){
 				minEntropy = totalAvgEntropy;
 				optimal = make_pair(i, j);
-			}
+			} //If smaller, then we change it
 			else if(minEntropy > totalAvgEntropy){
 				minEntropy = totalAvgEntropy;
 				optimal = make_pair(i, j);
@@ -136,6 +147,7 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 	}
 	//Now we do stuff that creates the new node with the coodinates and stuff
 	//IDK RN
+	delete stats;
 	return NULL;
 }
 

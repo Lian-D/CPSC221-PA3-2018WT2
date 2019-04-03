@@ -149,6 +149,8 @@ public:
      */
     int size();
 
+    int size(const Node * node);
+
    /* =============== end of public PA3 FUNCTIONS =========================*/
 
 private:

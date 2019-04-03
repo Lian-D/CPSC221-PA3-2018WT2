@@ -69,23 +69,28 @@ root = buildTree(subimage,k);
 //Compiles: yes
 //Working: internally yes
 int toqutree::size() {
-	int size = 1; //This node
-	if (root->NW == NULL && root->SW == NULL && root->SE == NULL && root->NE == NULL){
-		return size = size + 0;
+	return size(root);
+}
+
+int toqutree::size(const Node* node){
+	int count = 1;
+	if (node->NW == NULL && node->SW == NULL && node->SE == NULL && node->NE == NULL){
+		return count;
 	}
-	if (root->NW != NULL){
-		size = size + root->NW.size();
+	if (node->NW != NULL){
+		count = count+size(node->NW);
 	}
-	if (root->NE != NULL){
-		size = size + root->NE.size();
+	if (node->NE != NULL){
+		count = count+size(node->NE);
 	}
-	if (root->SW != NULL){
-		size = size + root->SW.size();
+	if (node->SW != NULL){
+		count = count+size(node->SW);
 	}
-	if (root->SE != NULL){
-		size = size + root->SE.size();
+	if (node->SE != NULL){
+		count = count+size(node->SE);
 	}
-return size;
+
+	return count;
 }
 
 //Debug Sheet
@@ -120,6 +125,7 @@ void toqutree::prune(double tol){
 
 }
 
+
 //Debug Sheet
 //Compiles: yes
 //Working: yes
@@ -153,8 +159,8 @@ void toqutree::clear(Node * & curr){
 }
 
 //Debug Sheet
-//Compiles: no
-//Working: no
+//Compiles: yes
+//Working: should be
 
 /* called by assignment operator and copy constructor */
 toqutree::Node * toqutree::copy(const Node * other) {

@@ -202,25 +202,25 @@ void stats::initializeHist(PNG& im){
 long stats::rectArea(pair<int,int> ul, pair<int,int> lr){
     // cout << "stats.cpp: " << __LINE__ << endl;
     // First case is where the rectangle area is normal and does not wrap
-    if(lr.first > ul.first && lr.second > ul.second){
+    if(lr.first >= ul.first && lr.second >= ul.second){
         long areacase1;
         areacase1 = (lr.first - ul.first + 1) * (lr.second - ul.second + 1);
         return areacase1;
     }
     //This is the case where the lower x is less than the upper x, but the y coordinate is not wrapping 
-    if(ul.first > lr.first && lr.second > ul.second){
+    if(ul.first >= lr.first && lr.second >= ul.second){
         long areacase2;
         areacase2 = ((hist.size() - ul.first) + lr.first + 1) * (lr.second - ul.second + 1);
         return areacase2; 
     }
     // This is the case where the y is wrapped, that is lower y is smaller than upper y but x is not wrapped
-    if(lr.first > ul.first && ul.second > lr.second){
+    if(lr.first >= ul.first && ul.second >= lr.second){
         long areacase3;
         areacase3 = (lr.first - ul.first + 1) * (lr.second + (hist[0].size() - ul.second + 1));
         return areacase3;
     }
     // This is the case where both x and y are wrapped
-    if(ul.first > lr.first && ul.second > lr.second){
+    if(ul.first >= lr.first && ul.second >= lr.second){
         long areacase4;
         areacase4 = ((hist.size() - ul.first) + lr.first + 1) * (lr.second + (hist[0].size() - ul.second + 1));
         return areacase4;
@@ -269,7 +269,8 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
             return pixel;
         }
         // CASE 2: getAvg is called with with x and y both greater than 0,0 NO WRAPPING
-        if(ul.first < lr.first && ul.second < lr.second){
+        cout << "stats.cpp: " << __LINE__ << endl;
+        if(ul.first <= lr.first && ul.second <= lr.second){
             cout << "is it here2?" << endl;
             if(ul.first != 0 && lr.first != 0){
                 double xhueA = sumHueX[lr.first][lr.second];
@@ -300,6 +301,7 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
                 HSLAPixel returnpixel(trueavg,satavg,lumavg,1.0);
                 return returnpixel;
             }
+            cout << "stats.cpp: " << __LINE__ << endl;
             // Case 3: getAvg is called with x = 0 and y!=0 NO WRAPPING
             if(ul.first == 0 && ul.second != 0){
                 cout << "is it here3?" << endl;
@@ -326,6 +328,7 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
                 return returnpixel;
             }
             // Case 4: getAvg is called with y = 0 and x !=0 NO WRAPPING
+            cout << "stats.cpp: " << __LINE__ << endl;
             if(ul.first != 0 && ul.second == 0){
                 cout << "is it here4?" << endl;
                 double xhueA = sumHueX[lr.first][lr.second];
@@ -351,8 +354,9 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
                 return returnpixel;
             }
         }
+        cout << "stats.cpp: " << __LINE__ << endl;
         // Case 5: getAvg is called with y = 0  X WRAPPING
-        if(ul.first > lr.first && ul.second < lr.second){
+        if(ul.first >= lr.first && ul.second <= lr.second){
             cout << "is it here5?" << endl;
             if(ul.second == 0 ){
              double xhueA = sumHueX[lr.first][lr.second];
@@ -381,7 +385,8 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
         }
         }
         //// Case 6: getAvg is called with y != 0 X WRAPPING
-        if(ul.first > lr.first && ul.second < lr.second){
+        cout << "stats.cpp: " << __LINE__ << endl;
+        if(ul.first >= lr.first && ul.second <= lr.second){
             cout << "is it here6?" << endl;
             double xhueA = sumHueX[lr.first][lr.second];
              double yhueA = sumHueY[lr.first][lr.second];
@@ -417,7 +422,13 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
                 return returnpixel;
         }
         // Case 7: getAvg is called with x = 0 and y != 0 Y WRAPPING
-        if(ul.first < lr.second && ul.second > lr.second){
+        cout << "stats.cpp: " << __LINE__ << endl;
+        cout << ul.first << endl;
+        cout << lr.first << endl;
+        cout << "y values" << endl;
+        cout << ul.second << endl;
+        cout << lr.second << endl;
+        if(ul.first <= lr.first && ul.second >= lr.second){
             cout << "being called correctly?" << endl;
             if(ul.first == 0){
              double xhueA = sumHueX[lr.first][lr.second];
@@ -455,9 +466,11 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
              double yhueD = sumHueY[ul.first-1][hist[0].size()-1];
              double xhueE = sumHueX[ul.first-1][ul.second-1];
              double yhueE = sumHueY[ul.first-1][ul.second-1];
+             double xhueF = sumHueX[ul.first-1][lr.second];
+             double yhueF = sumHueY[ul.first-1][lr.second];
 
-             double avgHueX = (xhueB - xhueC - xhueD + xhueE + xhueA)/rectArea(ul,lr);
-             double avgHueY = (yhueB - yhueC - yhueD + yhueE + yhueA)/rectArea(ul,lr);
+             double avgHueX = (xhueB - xhueC - xhueD + xhueE + xhueA - xhueF)/rectArea(ul,lr);
+             double avgHueY = (yhueB - yhueC - yhueD + yhueE + yhueA - yhueF)/rectArea(ul,lr);
 
              double trueavg = atan2(avgHueY,avgHueX) * 180/PI ; 
 
@@ -465,18 +478,126 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
                         trueavg = trueavg + 360;
                     }
             double satavg = (sumSat[lr.first][hist[0].size()-1] - sumSat[lr.first][ul.second-1] - sumSat[ul.first-1][hist[0].size()-1]
-            + sumSat[ul.first-1][ul.second-1] + sumSat[lr.first][lr.second])/rectArea(ul,lr);
+            + sumSat[ul.first-1][ul.second-1] + sumSat[lr.first][lr.second] - sumSat[ul.first-1][lr.second])/rectArea(ul,lr);
 
             double lumavg = (sumLum[lr.first][hist[0].size()-1] - sumLum[lr.first][ul.second-1] - sumLum[ul.first-1][hist[0].size()-1]
-            + sumLum[ul.first-1][ul.second-1] + sumLum[lr.first][lr.second])/rectArea(ul,lr);
+            + sumLum[ul.first-1][ul.second-1] + sumLum[lr.first][lr.second] - sumSat[ul.first-1][lr.second])/rectArea(ul,lr);
 
             HSLAPixel returnpixel(trueavg,satavg,lumavg,1.0);
             return returnpixel;
  
             }
         }
+        cout << "stats.cpp: " << __LINE__ << endl;
+        // CASE 9 Double wrapping come back to this later 
+        if(ul.first >= lr.first && ul.second >= lr.second){
+            cout << " YAYEET" << endl;
+            double xhueA = sumHueX[hist.size()-1][hist[0].size()-1];
+            double yhueA = sumHueY[hist.size()-1][hist[0].size()-1];
+            double xhueB = sumHueX[hist.size()-1][lr.second];
+            double yhueB = sumHueY[hist.size()-1][lr.second];
+            double xhueC = sumHueX[lr.first][lr.second];
+            double yhueC = sumHueY[lr.first][lr.second];
+            double xhueD = sumHueX[lr.first][hist[0].size()-1];
+            double yhueD = sumHueY[lr.first][hist[0].size()-1];
+            double xhueA1 = sumHueX[hist.size()-1][ul.second-1];
+            double yhueA1 = sumHueY[hist.size()-1][ul.second-1];
+            double xhueA2 = sumHueX[ul.first-1][ul.second-1];
+            double yhueA2 = sumHueY[ul.first-1][ul.second-1];
+            double xhueA3 = sumHueX[ul.first-1][hist[0].size()-1];
+            double yhueA3 = sumHueY[ul.first-1][hist[0].size()-1];
+            double xhueB1 = sumHueX[ul.first-1][lr.second];
+            double yhueB1 = sumHueY[ul.first-1][lr.second];
+            double xhueD1 = sumHueX[lr.first][ul.second-1];
+            double yhueD1 = sumHueY[lr.first][ul.second-1];
+
+            double ASUMX = xhueA - xhueA1 - xhueA3 + xhueA2;
+            double ASUMY = yhueA - yhueA1 - yhueA3 + yhueA2;
+            double BSUMX = xhueB -xhueB1;
+            double BSUMY = yhueB - yhueB1;
+            double DSUMX = xhueD - xhueD1;
+            double DSUMY = yhueD - yhueD1;
+
+            double avgHueX = (ASUMX + BSUMX + xhueC + DSUMX)/rectArea(ul,lr);
+            double avgHueY = (ASUMY + BSUMY + yhueC + DSUMY)/rectArea(ul,lr);
+
+            double trueavg = atan2(avgHueY,avgHueX) * 180/PI ; 
+
+                    if(trueavg < 0){
+                        trueavg = trueavg + 360;
+                    }
+
+             double satA = sumSat[hist.size()-1][hist[0].size()-1];
+            double satB = sumSat[hist.size()-1][lr.second];
+            double satC = sumSat[lr.first][lr.second];
+            double satD = sumSat[lr.first][hist[0].size()-1];
+            double satA1 = sumSat[hist.size()-1][ul.second-1];
+            double satA2 = sumSat[ul.first-1][ul.second-1];
+            double satA3 = sumSat[ul.first-1][hist[0].size()-1];
+            double satB1 = sumSat[ul.first-1][lr.second];
+            double satD1 = sumSat[lr.first][ul.second-1];
+
+
+            
+             double lumA = sumLum[hist.size()-1][hist[0].size()-1];
+            double lumB = sumLum[hist.size()-1][lr.second];
+            double lumC = sumLum[lr.first][lr.second];
+            double lumD = sumLum[lr.first][hist[0].size()-1];
+            double lumA1 = sumLum[hist.size()-1][ul.second-1];
+            double lumA2 = sumLum[ul.first-1][ul.second-1];
+            double lumA3 = sumLum[ul.first-1][hist[0].size()-1];
+            double lumB1 = sumLum[ul.first-1][lr.second];
+            double lumD1 = sumLum[lr.first][ul.second-1];
+
+            double satavg = (satA - satA1 - satA3 + satA2 + satB - satB1 + satC + satD - satD1)/rectArea(ul,lr);
+
+            double lumavg = (lumA - lumA1 - lumA3 + lumA2 + lumB - lumB1 + lumC + lumD - lumD1)/rectArea(ul,lr);
+        
+            // double xhueA = sumHueX[hist.size()-1][hist[0].size()-1];
+            // double yhueA = sumHueY[hist.size()-1][hist[0].size()-1];
+            // // double xhueB = sumHueX[hist.size()-1][hist[0].size()-1];
+            // // double yhueB = sumHueY[hist.size()-1][hist[0].size()-1];
+            // double xhueC = sumHueX[hist.size()-1][ul.second-1];
+            // double yhueC = sumHueY[hist.size()-1][ul.second-1];
+            // double xhueD = sumHueX[ul.first-1][hist[0].size()-1];
+            // double yhueD = sumHueY[ul.first-1][hist[0].size()-1];
+            // double xhueE = sumHueX[lr.first][hist[0].size()-1];
+            // double yhueE = sumHueY[lr.first][hist[0].size()-1];
+            // double xhueG = sumHueX[lr.first][lr.second];
+            // double yhueG = sumHueY[lr.first][lr.second];             
+            // double xhueF = sumHueX[lr.first][ul.second-1];
+            // double yhueF = sumHueY[lr.first][ul.second-1];
+            // double xhueH = sumHueX[ul.first-1][lr.second];
+            // double yhueH = sumHueY[ul.first-1][lr.second];
+            // double xhueI = sumHueX[ul.first-1][ul.second-1];
+            // double yhueI = sumHueY[ul.first-1][ul.second-1];
+
+            // double avgHueX = (xhueA - xhueD + xhueE - xhueF + xhueG - xhueC + xhueF + xhueH + xhueI + xhueG)/rectArea(ul,lr);
+
+            // double avgHueY = (yhueA - yhueD + yhueE - yhueF + yhueG - yhueC + yhueF + yhueH + yhueI + yhueG)/rectArea(ul,lr);
+
+             
+
+            // double satavg = (sumSat[hist.size()-1][hist[0].size()-1] - sumSat[ul.first-1][hist[0].size()-1] + sumSat[lr.first][hist[0].size()-1]
+            // - sumSat[lr.first][ul.second-1] + sumSat[lr.first][lr.second] - sumSat[hist.size()-1][ul.second-1] + sumSat[lr.first][ul.second-1]
+            // + sumSat[ul.first-1][lr.second] + sumSat[ul.first-1][ul.second-1] + sumSat[lr.first][lr.second])/rectArea(ul,lr);
+
+            cout << "print rectarea" << endl;
+            cout << rectArea(ul,lr) << endl;
+            cout << "print satavg" << endl;
+            cout << satavg * rectArea(ul,lr) << endl;
+
+            // double lumavg = (sumLum[hist.size()-1][hist[0].size()-1] - sumLum[ul.first-1][hist[0].size()-1] + sumLum[lr.first][hist[0].size()-1]
+            // - sumLum[lr.first][ul.second-1] + sumLum[lr.first][lr.second] - sumLum[hist.size()-1][ul.second-1] + sumLum[lr.first][ul.second-1]
+            // + sumLum[ul.first-1][lr.second] + sumLum[ul.first-1][ul.second-1] + sumLum[lr.first][lr.second])/rectArea(ul,lr);
+
+            HSLAPixel returnpixel(trueavg,satavg,lumavg,1.0);
+            return returnpixel;
+
+        }
         // If ul and lr are the same;
         if(ul.first == lr.first && ul.second == lr.second){
+            cout << "stats.cpp: " << __LINE__ << endl;
             if (ul.first == 0 && ul.second == 0){
                 double avgHueX = sumHueX[0][0];
                 double avgHueY = sumHueY[0][0];
@@ -492,6 +613,7 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
                 return returnpixel;
             }
             else if(ul.first == 0 && ul.second != 0){
+                cout << "stats.cpp: " << __LINE__ << endl;
                 double xhueA = sumHueX[lr.first][lr.second];
                 double yhueA = sumHueY[lr.first][lr.second];
                 double xhueB = sumHueX[lr.first][lr.second-1];
@@ -512,6 +634,7 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
                 return returnpixel;    
             }
             else if(ul.first != 0 && ul.second == 0){
+                cout << "stats.cpp: " << __LINE__ << endl;
                 double xhueA = sumHueX[lr.first][lr.second];
                 double yhueA = sumHueY[lr.first][lr.second];
                 double xhueB = sumHueX[lr.first-1][lr.second];
@@ -598,8 +721,75 @@ vector<int> stats::buildHist(pair<int,int> ul, pair<int,int> lr){
         }
         return histogram;
     }
+    // When ul is 0,0
+    if(ul.first == 0 && ul.second == 0){
+        vector<int> histogram = hist[lr.first][lr.second];
+        return histogram;
+    }
+    // Case 5: getAvg is called with y = 0  X WRAPPING
+   // Case 6: getAvg is called with y != 0 X WRAPPING
+   // Case 7: getAvg is called with x = 0 and y != 0 Y WRAPPING
+   // Case 8: getAvg is called with x !=0  Y WRAPPING
+   // Case 5: 
+    if((ul.first >= lr.first && ul.second <= lr.second)){
+        if(ul.second == 0){
+            vector<int> hA = hist[hist.size()-1][lr.second];
+            vector<int> hB = hist[lr.first][lr.second];
+            vector<int> hC = hist[ul.first - 1][lr.second];
 
-}
+            for(int i = 0; i < 36; i++){
+                hA[i] = hA[i] + hB[i] - hC[i];
+            }
+            return hA;
+        }
+        // Case 6
+        else{
+            vector<int> hA = hist[hist.size()-1][lr.second];
+            vector<int> hB = hist[lr.first][lr.second];
+            vector<int> hC = hist[ul.first - 1][lr.second];
+            vector<int> hD = hist[hist.size()-1][ul.second-1];
+            vector<int> hF = hist[lr.first][ul.second-1];
+            vector<int> hE = hist[ul.first-1][ul.second-1];
+
+            for(int i = 0; i < 36; i++){
+                hA[i] = hA[i] - hC[i] + hB[i] - hD[i] + hE[i] - hF[i];
+            }
+            return hA;
+        }
+        }
+        // Case 7: y wrapping ul first is zero 
+        if(ul.first <= lr.first && ul.second >= lr.second){
+            if(ul.first == 0){
+                vector<int> hA = hist[lr.first][hist[0].size()-1];
+                vector<int> hC = hist[lr.first][ul.second-1];
+                vector<int> hB = hist[lr.first][lr.second];
+
+                 for(int i = 0; i < 36; i++){
+                    hA[i] = hA[i] + hB[i] - hC[i];
+                    }
+                return hA;
+            }
+            else{
+                // Case 8
+                vector<int> hA = hist[lr.first][hist[0].size()-1];
+                vector<int> hB = hist[lr.first][lr.second];
+                vector<int> hC = hist[lr.first][ul.second-1];
+                vector<int> hD = hist[ul.first-1][hist[0].size()-1];
+                vector<int> hE = hist[ul.first-1][ul.second-1];
+                vector<int> hF = hist[ul.first-1][lr.second];
+
+                for(int i = 0; i < 36; i++){
+                    hA[i] = hA[i] + hB[i] - hC[i] - hD[i] + hE[i] - hF[i];
+                    }
+                return hA;
+
+            }
+        }
+        // Case 9 : double wrapping
+    }
+    
+    
+
 
 // takes a distribution and returns entropy
 // partially implemented so as to avoid rounding issues.

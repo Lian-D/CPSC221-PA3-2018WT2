@@ -98,6 +98,39 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 	//Optimal entropy and points for deciding the split
 	pair<int,int> optimal;
 	double minEntropy;
+
+	int pngWidth = *im.width();
+	int pngLength = *im.length();
+
+	int nodeLength = pngWidth/2;
+	int nodeHeight = pngLength/2;
+
+	int upperLeftAreaX = nodeLength/2;
+	int upperLeftAreaY = nodeHeight/2;
+
+	int lowerRightAreaX = upperLeftAreaX*3;
+	int lowerRightAreaY = upperLeftAreaY*3;
+
+	stats pngStats = stats(im);
+
+	for(int i = upperLeftAreaX; i<lowerRightAreaX; i++){
+		for (int j = upperLeftAreaY; j <lowerRightAreaY; j++){
+			//These calculations might not be right
+			int Entropy NE = pngStats.entropy(makePair(i,j-nodeHeight),makePair(i + nodeLength,j -1));
+			int Entropy NW = pngStats.entropy(makePair(i-nodeLength,j-nodeHeight),makePair(i-1,j-1));
+			int Entropy SE = pngStats.entropy(makePair(i,j),makePair(i + nodeLength,j + nodeHeight));
+			int Entropy SW = pngStats.entropy(makePair(i-nodeLength,j),makePair(i - 1,j + nodeHeight));
+
+			int totalEntropy = NE+NW+SE+SW;
+			int avgEntropy = totalEntropy/4;
+			//Checks for the lowest average Entropy at o(n) because I hate this project
+			if ((avgEntropy < minEntropy) || (minEntropy == NULL)){
+				minEntropy = avgEntropy;
+				optimal = makePair(i,j);
+			}
+		}
+	}
+	//Dunno what to do for the rest
 	return NULL;
 }
 

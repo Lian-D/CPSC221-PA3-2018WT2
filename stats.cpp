@@ -688,21 +688,55 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
     }
 
 vector<int> stats::buildHist(pair<int,int> ul, pair<int,int> lr){
-    // non zero normal case 
-    if(ul.first != 0 && ul.second != 0){
-        vector<int> oghistogram = hist[lr.first][lr.second];
-        vector<int> blhistogram = hist[ul.first-1][lr.second];
-        vector<int> uphistogram = hist[ul.first-1][ul.second-1];
-        vector<int> urhistogram = hist[lr.first][ul.second-1];
-        for(int i = 0; i < 36; i++){
-            oghistogram[i] = oghistogram[i] - blhistogram[i] - urhistogram[i] + uphistogram[i];
+   // when ul and lr are the same
+    if(ul.first == lr.first && ul.second == lr.second){
+        if(ul.first == 0 && ul.second == 0){
+            return hist[0][0];
         }
-        return oghistogram;
+        if(ul.first == 0 && ul.second != 0){
+            vector<int> hA = hist[ul.first][ul.second];
+            vector<int> hB = hist[ul.first][ul.second-1];
+            for(int i = 0; i < 36; i++){
+            hA[i] = hA[i] - hB[i];
+        }
+        return hA;
+        }
+        if(ul.first != 0 && ul.second == 0){
+            vector<int> hA = hist[ul.first][ul.second];
+            vector<int> hB = hist[ul.first-1][ul.second];
+            for(int i = 0; i < 36; i++){
+            hA[i] = hA[i] - hB[i];
+        }
+        return hA;
+        }
+        if(ul.first != 0 && ul.second != 0){
+            vector<int> hA = hist[ul.first][ul.second];
+            vector<int> hB = hist[ul.first][ul.second-1];
+            vector<int> hC = hist[ul.first-1][ul.second-1];
+            vector<int> hD = hist[ul.first-1][ul.second];
+            for(int i = 0; i< 36; i++){
+                hA[i] = hA[i] - hB[i] - hD[i] + hC[i];
+            }
+            return hA;
+        }
     }
-    if(ul.first == 0 && ul.second == 0){
+    // ul is 0,0 case
+    if(ul.first == 0 && ul.second == 0 && lr.first != 0 && lr.second != 0){
         vector<int> histogram = hist[lr.first][lr.second];
         return histogram;
     }
+    if( ul.first <= lr.first && ul.second <= lr.second){
+        cout << "called correclty? " <<  endl;
+    //     vector<int> oghistogram = hist[lr.first][lr.second];
+    //     vector<int> blhistogram = hist[ul.first-1][lr.second];
+    //     vector<int> uphistogram = hist[ul.first-1][ul.second-1];
+    //     vector<int> urhistogram = hist[lr.first][ul.second-1];
+    //     for(int i = 0; i < 36; i++){
+    //         oghistogram[i] = oghistogram[i] - blhistogram[i] - urhistogram[i] + uphistogram[i];
+    //     }
+    //     return oghistogram;
+    // }
+    
     // first case where x is zero
     if(ul.first == 0 && ul.second != 0){
         vector<int> histogram = hist[lr.first][lr.second];
@@ -725,6 +759,7 @@ vector<int> stats::buildHist(pair<int,int> ul, pair<int,int> lr){
     if(ul.first == 0 && ul.second == 0){
         vector<int> histogram = hist[lr.first][lr.second];
         return histogram;
+    }
     }
     // Case 5: getAvg is called with y = 0  X WRAPPING
    // Case 6: getAvg is called with y != 0 X WRAPPING
@@ -787,6 +822,7 @@ vector<int> stats::buildHist(pair<int,int> ul, pair<int,int> lr){
         }
         // Case 9 : double wrapping
     }
+    
     
     
 

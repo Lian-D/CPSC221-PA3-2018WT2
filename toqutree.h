@@ -181,6 +181,8 @@ private:
    * @param other The toqutree to be copied.
    */
    Node * copy(const Node * croot);
+   Node * copyTree(const Node * other);
+
 
    /**
    * Private helper function for the constructor. Recursively builds

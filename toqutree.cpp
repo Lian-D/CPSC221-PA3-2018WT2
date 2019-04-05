@@ -113,7 +113,7 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 	else {
 		//Static vars
 		stats* pngStats= new stats(*im);
-		pair<int,int> pivotStart = (k/4, k/4);
+		pair<int,int> pivotStart = make_pair(k/4, k/4);
 		int boundary=k/2;
 		HSLAPixel avg= pngStats->getAvg(make_pair(0,0),make_pair(k-1,k-1));
 
@@ -131,10 +131,10 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 		for (int y=pivotStart.first; y < pivotStart.first+boundary; y++){
 			for (int x = pivotStart.first; x< pivotStart.first+boundary; x++){
 				//Entropy for respective corners;
-				int SE = pngStats->entropy(make_pair(x,y), make_pair((x+boundary-1) % k,(y+boundary-1) % k);
+				int SE = pngStats->entropy(make_pair(x,y), make_pair((x+boundary-1) % k,(y+boundary-1) % k));
 				int SW = pngStats->entropy(make_pair((x+boundary) % k,y), make_pair((x-1) % k,(y+boundary-1)%k));
 				int NE = pngStats->entropy(make_pair(x,(y+boundary)% k), make_pair((x+boundary-1)%k,(y-1) % k));
-				int NW = pngStats->entropy(make_pair((x+boundary) % k,(y+boundary) % k), make_pair((x-1) % k,(y-1) % k);
+				int NW = pngStats->entropy(make_pair((x+boundary) % k,(y+boundary) % k), make_pair((x-1) % k,(y-1) % k));
 				int avgEntropy = (SE+SW+NE+NW)/4;
 
 				if (currMinEntropy >= avgEntropy){
@@ -152,7 +152,7 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 		PNG* NE = subPNG(im, NEStart,k);
 		PNG* NW = subPNG(im, NWStart,k);
 
-		Node * newNode= new Node(optimalCt, k, avg);
+		Node * newNode= new Node(optimalCtr, k, avg);
 		newNode->SE=buildTree(SE, k/2);
 		newNode->SW=buildTree(SW, k/2);
 		newNode->NE=buildTree(NE, k/2);

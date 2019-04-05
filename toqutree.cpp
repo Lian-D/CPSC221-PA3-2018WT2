@@ -111,10 +111,16 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 		return newNode;
 	}
 	else {
-		//placeholder part
-		//Pixel Doesn't matter just return 1 pixel
-		HSLAPixel avg= *(im->getPixel(0,0));
-		Node* newNode =  new Node(pair<int,int>(0,0), 1, avg);
+		//2x2 pretty straight foward
+		//TODO HERE
+		stats* pngStats= new stats(*im);
+		HSLAPixel avg= pngStats->getAvg(pair<int,int>(0,0),pair<int,int>(1,1));
+		Node* newNode= new Node(pair<int,int>(1,1), 2, avg);
+		newNode->SE = new Node(pair<int,int>(0,0),1,*(im->getPixel(1,1)));
+		newNode->SW = new Node(pair<int,int>(0,0),1,*(im->getPixel(0,1)));
+		newNode->NE = new Node(pair<int,int>(0,0),1,*(im->getPixel(1,0)));
+		newNode->NW = new Node(pair<int,int>(0,0),1,*(im->getPixel(0,0)));
+		delete pngStats;
 		return newNode;
 	}
 
@@ -196,8 +202,53 @@ void toqutree::prune(double tol){
 //Working: no, yet to be implemented
 //@TODO
 void toqutree::prune(Node* node,double tol){
-	//No idea about prune rn
+	if (pruneCheck == 1){
+		clear(node);
+	}
+	else{
+		if(node->dim >2){
+			prune(node->NW, tol);
+			prune(node->NE, tol);
+			prune(node->SW, tol);
+			prune(node->NE, tol);
+		}
+		return;
+	}
 }
+
+int pruneCheck(Node* prev,Node* curr,double tol){
+	int avgDistNE = prev->avg.dist(curr->NE->avg);
+	int avgDistNW = prev->avg.dist(curr->NW->avg);
+	int avgDistSE = prev->avg.dist(curr->SE->avg);
+	int avgDistSW = prev->avg.dist(curr->SW->avg);
+
+	if (curr->dimension == 2 && avgDistNE < tol && avgDistNW < tol && avgDistSE < tol && avgDistSW < tol &&){
+		return 1; //true
+	}
+	else if (curr->dimension != 2){
+		//I pray this actually works
+		//If all satisfy the condition that they are similar, we can return true, but otherwise false
+		if (pruneCheck(prev,curr->NW, tol) != 1){
+			return 0; 
+		}
+		if (pruneCheck(prev,curr->NE, tol) != 1){
+			return 0;
+		}
+		if (pruneCheck(prev,curr->SE, tol) != 1){
+			return 0;
+		}
+		if (pruneCheck(prev,curr->SW, tol) != 1){
+			return 0;
+		}
+		else {
+			return 1;
+		}
+	}
+	else{
+		return 0;
+	}
+}
+
 
 
 //Debug Sheet

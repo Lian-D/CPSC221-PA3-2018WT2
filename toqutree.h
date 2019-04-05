@@ -147,6 +147,7 @@ public:
     */
    void prune(double tol);
    void prune(Node* node,double tol);
+   int pruneCheck(Node* prev,Node* curr,double tol);
 
     /* returns the number of nodes in the current toqutree. primarily used
      * for debugging and testing.

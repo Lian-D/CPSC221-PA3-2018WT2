@@ -119,9 +119,9 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 		pair<int, int> optimalCentre = findCtr(start, boundary, k, pngStats, im);
 		
 		pair<int,int> SE= optimalCentre;
-		pair<int,int> SW= make_pair((x+boundary) % k, y);
-		pair<int,int> NE= make_pair(x,(y+boundary )% k);
-		pair<int,int> SW= make_pair((x+boundary) % k,(y+boundary) % k);
+		pair<int,int> SW= make_pair((optimalCentre.first+boundary) % k, optimalCentre.second);
+		pair<int,int> NE= make_pair(optimalCentre.first,(optimalCentre.second+boundary )% k);
+		pair<int,int> SW= make_pair((optimalCentre.first+boundary) % k,(optimalCentre.second+boundary) % k);
 
 		Node * newNode= new Node(center, k, avg);
 		PNG* subSE= subPNG(PNG* im, SE,int k);
@@ -139,7 +139,7 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 		delete subSE;
 		delete subSW;
 		delete pngStats;
-		
+
 		return newNode;
 	}
 }	

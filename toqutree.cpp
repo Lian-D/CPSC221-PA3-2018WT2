@@ -127,8 +127,8 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 
 		long currMinEntropy=0;
 
-		int subDim = k/2;
-		int incrementSpace = k/4;
+		int subDim = pow(2,k)/2;
+		int incrementSpace = pow(2,k)/4;
 
 		stats* pngStats = new stats(*im);
 		for (int y=incrementSpace; y < 3*incrementSpace; y++){

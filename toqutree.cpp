@@ -147,6 +147,7 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 			}
 
 		}
+	}
 		PNG* SE = subPNG(im, SEStart,k);
 		PNG* SW = subPNG(im, SWStart,k);
 		PNG* NE = subPNG(im, NEStart,k);
@@ -163,7 +164,6 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 		delete SE;
 		delete SW;
 		delete pngStats;
-		}
 		return newNode;
 	}
 }	

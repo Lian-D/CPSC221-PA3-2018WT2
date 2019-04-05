@@ -34,7 +34,7 @@ toqutree & toqutree::operator=(const toqutree & rhs){
 
 //Debug Sheet
 //Compiles: yes
-//Working: not sure, but most likely yes
+//Working: yes (with reliance on buildtree)
 toqutree::toqutree(PNG & imIn, int k){ 
 
 /* This constructor grabs the 2^k x 2^k sub-image centered */
@@ -60,7 +60,8 @@ root=buildTree(&subimage, pow(2,k));
 
 //Debug Sheet
 //Compiles: yes
-//Working: internally yes
+//Working: yes
+//FULL MARKS 
 int toqutree::size() {
 	return size(root);
 }
@@ -87,8 +88,9 @@ int toqutree::size(const Node* node){
 }
 
 //Debug Sheet
-//Compiles: no
-//Working: no
+//Compiles: yes
+//Working: haven't done bigger cases yet
+//@TODO
 toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 	if(k==1){
 		//Pixel Doesn't matter just return 1 pixel
@@ -109,6 +111,7 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 		return newNode;
 	}
 	else {
+		//placeholder part
 		//Pixel Doesn't matter just return 1 pixel
 		HSLAPixel avg= *(im->getPixel(0,0));
 		Node* newNode =  new Node(pair<int,int>(0,0), 1, avg);
@@ -131,7 +134,8 @@ PNG* toqutree::subPNG(PNG* originalIm, pair<int,int>start,int k){
 
 //Debug Sheet
 //Compiles: yes
-//Working: no
+//Working: yes
+//FULL MARKS -> Clear works therefor it means our code for render works at least
 PNG toqutree::render(){
 // My algorithm for this problem included a helper function
 // that was analogous to Find in a BST, but it navigated the 
@@ -187,6 +191,10 @@ void toqutree::prune(double tol){
 	prune(root,tol);
 }
 
+//Debug Sheet
+//Compiles: yes
+//Working: no, yet to be implemented
+//@TODO
 void toqutree::prune(Node* node,double tol){
 	//No idea about prune rn
 }
@@ -195,7 +203,7 @@ void toqutree::prune(Node* node,double tol){
 //Debug Sheet
 //Compiles: yes
 //Working: yes
-
+//FULL MARKS 
 /* called by destructor and assignment operator*/
 void toqutree::clear(Node * & curr){
 	if (curr == NULL){
@@ -215,8 +223,8 @@ void toqutree::clear(Node * & curr){
 
 //Debug Sheet
 //Compiles: yes
-//Working: should be
-
+//Working: yes
+//FULL MARKS 
 /* called by assignment operator and copy constructor */
 toqutree::Node * toqutree::copy(const Node * other) {
 	root = copyTree(other);

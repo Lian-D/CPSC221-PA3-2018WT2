@@ -216,7 +216,7 @@ void toqutree::prune(Node* node,double tol){
 	}
 }
 
-int pruneCheck(Node* prev,Node* curr,double tol){
+int pruneCheck(Node* prev, Node* curr, double tol){
 	int avgDistNE = prev->avg.dist(curr->NE->avg);
 	int avgDistNW = prev->avg.dist(curr->NW->avg);
 	int avgDistSE = prev->avg.dist(curr->SE->avg);

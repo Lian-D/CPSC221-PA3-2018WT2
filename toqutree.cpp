@@ -110,34 +110,23 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 		delete pngStats;
 		return newNode;
 	}
-		// //This is just here because for some reason the other code fails
-		// stats* pngStats= new stats(*im);
-		// HSLAPixel avg= pngStats->getAvg(pair<int,int>(0,0),pair<int,int>(1,1));
-		// Node* newNode= new Node(pair<int,int>(1,1), 2, avg);
-		// newNode->SE = new Node(pair<int,int>(0,0),1,*(im->getPixel(1,1)));
-		// newNode->SW = new Node(pair<int,int>(0,0),1,*(im->getPixel(0,1)));
-		// newNode->NE = new Node(pair<int,int>(0,0),1,*(im->getPixel(1,0)));
-		// newNode->NW = new Node(pair<int,int>(0,0),1,*(im->getPixel(0,0)));
-		// delete pngStats;
-		// return newNode;
-
-		//Static vars
+	//Static vars
 	stats* pngStats= new stats(*im);
 	pair<int,int> pivotStart = make_pair(k/4, k/4);
 	int boundary=k/2;
 	HSLAPixel avg = pngStats->getAvg(make_pair(0,0),make_pair(k-1,k-1));
 
-		//Thing we cycle through to determine optimal points
+	//Thing we cycle through to determine optimal points
 	pair<int,int> NWStart;
 	pair<int,int> NEStart;
 	pair<int,int> SEStart;
 	pair<int,int> SWStart;
 
-		//Optimal splitting point
+	//Optimal splitting point
 	pair<int,int> optimalCtr;
 	int currMinEntropy;
 
-	SEARCH HERE
+	//SEARCH HERE
 	for (int y=pivotStart.first; y < pivotStart.first+boundary; y++){
 		for (int x = pivotStart.first; x< pivotStart.first+boundary; x++){
 			//Entropy for respective corners;

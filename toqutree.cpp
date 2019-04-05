@@ -110,72 +110,71 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 		delete pngStats;
 		return newNode;
 	}
-	else {
-		//This is just here because for some reason the other code fails
-		stats* pngStats= new stats(*im);
-		HSLAPixel avg= pngStats->getAvg(pair<int,int>(0,0),pair<int,int>(1,1));
-		Node* newNode= new Node(pair<int,int>(1,1), 2, avg);
-		newNode->SE = new Node(pair<int,int>(0,0),1,*(im->getPixel(1,1)));
-		newNode->SW = new Node(pair<int,int>(0,0),1,*(im->getPixel(0,1)));
-		newNode->NE = new Node(pair<int,int>(0,0),1,*(im->getPixel(1,0)));
-		newNode->NW = new Node(pair<int,int>(0,0),1,*(im->getPixel(0,0)));
-		delete pngStats;
-		return newNode;
+		// //This is just here because for some reason the other code fails
+		// stats* pngStats= new stats(*im);
+		// HSLAPixel avg= pngStats->getAvg(pair<int,int>(0,0),pair<int,int>(1,1));
+		// Node* newNode= new Node(pair<int,int>(1,1), 2, avg);
+		// newNode->SE = new Node(pair<int,int>(0,0),1,*(im->getPixel(1,1)));
+		// newNode->SW = new Node(pair<int,int>(0,0),1,*(im->getPixel(0,1)));
+		// newNode->NE = new Node(pair<int,int>(0,0),1,*(im->getPixel(1,0)));
+		// newNode->NW = new Node(pair<int,int>(0,0),1,*(im->getPixel(0,0)));
+		// delete pngStats;
+		// return newNode;
 
-	// 	//Static vars
-	// 	stats* pngStats= new stats(*im);
-	// 	pair<int,int> pivotStart = make_pair(k/4, k/4);
-	// 	int boundary=k/2;
-	// 	HSLAPixel avg= pngStats->getAvg(make_pair(0,0),make_pair(k-1,k-1));
+		//Static vars
+	stats* pngStats= new stats(*im);
+	pair<int,int> pivotStart = make_pair(k/4, k/4);
+	int boundary=k/2;
+	HSLAPixel avg = pngStats->getAvg(make_pair(0,0),make_pair(k-1,k-1));
 
-	// 	//Thing we cycle through to determine optimal points
-	// 	pair<int,int> NWStart;
-	// 	pair<int,int> NEStart;
-	// 	pair<int,int> SEStart;
-	// 	pair<int,int> SWStart;
+		//Thing we cycle through to determine optimal points
+	pair<int,int> NWStart;
+	pair<int,int> NEStart;
+	pair<int,int> SEStart;
+	pair<int,int> SWStart;
 
-	// 	//Optimal splitting point
-	// 	pair<int,int> optimalCtr;
-	// 	int currMinEntropy = 9999;
+		//Optimal splitting point
+	pair<int,int> optimalCtr;
+	int currMinEntropy = 9999;
 
-	// 	//SEARCH HERE
-	// 	for (int y=pivotStart.first; y < pivotStart.first+boundary; y++){
-	// 		for (int x = pivotStart.first; x< pivotStart.first+boundary; x++){
-	// 			//Entropy for respective corners;
-	// 			int SE = pngStats->entropy(make_pair(x,y), make_pair((x+boundary-1) % k,(y+boundary-1) % k));
-	// 			int SW = pngStats->entropy(make_pair((x+boundary) % k,y), make_pair((x-1) % k,(y+boundary-1)%k));
-	// 			int NE = pngStats->entropy(make_pair(x,(y+boundary)% k), make_pair((x+boundary-1)%k,(y-1) % k));
-	// 			int NW = pngStats->entropy(make_pair((x+boundary) % k,(y+boundary) % k), make_pair((x-1) % k,(y-1) % k));
-	// 			int avgEntropy = (SE+SW+NE+NW)/4;
+		//SEARCH HERE
+	for (int y=pivotStart.first; y < pivotStart.first+boundary; y++){
+		for (int x = pivotStart.first; x< pivotStart.first+boundary; x++){
+				//Entropy for respective corners;
+			int SE = pngStats->entropy(make_pair(x,y), make_pair((x+boundary-1) % k,(y+boundary-1) % k));
+			int SW = pngStats->entropy(make_pair((x+boundary) % k,y), make_pair((x-1) % k,(y+boundary-1)%k));
+			int NE = pngStats->entropy(make_pair(x,(y+boundary)% k), make_pair((x+boundary-1)%k,(y-1) % k));
+			int NW = pngStats->entropy(make_pair((x+boundary) % k,(y+boundary) % k), make_pair((x-1) % k,(y-1) % k));
+			int avgEntropy = (SE+SW+NE+NW)/4;
 
-	// 			if (currMinEntropy >= avgEntropy){
-	// 				currMinEntropy = avgEntropy;
-	// 				optimalCtr = make_pair(x,y);
-	// 				NWStart = make_pair((x+boundary) % k,(y+boundary) % k);
-	// 				NEStart = make_pair(x,(y+boundary)% k);
-	// 				SEStart = make_pair(x,y);
-	// 				SWStart = make_pair((x+boundary) % k,y);
-	// 		}
+			if (currMinEntropy >= avgEntropy){
+				currMinEntropy = avgEntropy;
+				optimalCtr = make_pair(x,y);
+				NWStart = make_pair((x+boundary) % k,(y+boundary) % k);
+				NEStart = make_pair(x,(y+boundary)% k);
+				SEStart = make_pair(x,y);
+				SWStart = make_pair((x+boundary) % k,y);
 
-	// 	}
-	// }
-	// 	PNG* SE = subPNG(im, SEStart,k);
-	// 	PNG* SW = subPNG(im, SWStart,k);
-	// 	PNG* NE = subPNG(im, NEStart,k);
-	// 	PNG* NW = subPNG(im, NWStart,k);
+			}
+		}
+	}
+	PNG* SE = subPNG(im, SEStart,k);
+	PNG* SW = subPNG(im, SWStart,k);
+	PNG* NE = subPNG(im, NEStart,k);
+	PNG* NW = subPNG(im, NWStart,k);
 
-	// 	Node * newNode= new Node(optimalCtr, k, avg);
-	// 	newNode->SE = buildTree(SE, k/2);
-	// 	newNode->SW = buildTree(SW, k/2);
-	// 	newNode->NE = buildTree(NE, k/2);
-	// 	newNode->NW = buildTree(NW, k/2);
+	Node * newNode= new Node(optimalCtr, k, avg);
+	newNode->SE = buildTree(SE, k/2);
+	newNode->SW = buildTree(SW, k/2);
+	newNode->NE = buildTree(NE, k/2);
+	newNode->NW = buildTree(NW, k/2);
 
-	// 	delete NE;
-	// 	delete NW;
-	// 	delete SE;
-	// 	delete SW;
-	// 	delete pngStats;
-	// 	return newNode;
+	delete NE;
+	delete NW;
+	delete SE;
+	delete SW;
+	delete pngStats;
+	return newNode;
 	}
 }	
 
@@ -252,8 +251,8 @@ void toqutree::prune(double tol){
 
 //Debug Sheet
 //Compiles: yes
-//Working: no, yet to be implemented
-//@TODO
+//Working: yes
+//Prune seems to work
 void toqutree::prune(Node* node,double tol){
 	if (pruneCheck(node,node,tol) == 1){
 		clear(node);

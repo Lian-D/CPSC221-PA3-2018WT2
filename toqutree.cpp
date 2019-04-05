@@ -163,10 +163,8 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 		delete SE;
 		delete SW;
 		delete pngStats;
-
-		return newNode;
 		}
-
+		return newNode;
 	}
 }	
 

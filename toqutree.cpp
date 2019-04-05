@@ -161,10 +161,10 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 		}
 		Node* newNode = new Node(ul_SE_Coordinates, k, pngStats->getAvg(ul_SE_Coordinates,lr_SE_Coordinates));
 
-		*newNode->SE = buildTree(subPNGMaker(*im,ul_SE_Coordinates,lr_SE_Coordinates,k-1), k-1);
-		*newNode->SW = buildTree(subPNGMaker(*im,ul_SW_Coordinates,lr_SW_Coordinates,k-1), k-1);
-		*newNode->NE = buildTree(subPNGMaker(*im,ul_NE_Coordinates,lr_NE_Coordinates,k-1), k-1);
-		*newNode->SW = buildTree(subPNGMaker(*im,ul_NW_Coordinates,lr_NW_Coordinates,k-1), k-1);
+		newNode->SE = buildTree(subPNGMaker(*im,ul_SE_Coordinates,lr_SE_Coordinates,k-1), k-1);
+		newNode->SW = buildTree(subPNGMaker(*im,ul_SW_Coordinates,lr_SW_Coordinates,k-1), k-1);
+		newNode->NE = buildTree(subPNGMaker(*im,ul_NE_Coordinates,lr_NE_Coordinates,k-1), k-1);
+		newNode->SW = buildTree(subPNGMaker(*im,ul_NW_Coordinates,lr_NW_Coordinates,k-1), k-1);
 
 		delete pngStats;
 		delete im;
@@ -173,7 +173,7 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 
 }
 
-PNG* toqutree::subPNGMaker(PNG* im, pair<int,int> ul, pair<int,int> lr, int k){
+PNG* subPNGMaker(PNG* im, pair<int,int> ul, pair<int,int> lr, int k){
 	PNG* subimage = new PNG(pow(2,k),pow(2,k));
 	for(int x = ul.first; x < lr.first; x++){
 		for(int y = ul.second; y < lr.second; y++){

@@ -42,22 +42,22 @@ toqutree::toqutree(PNG & imIn, int k){
 /* that imIn is large enough to contain an image of that size. */
 
 // // Creating the subimage
-// PNG subimage(pow(2,k),pow(2,k));
-// int center = imIn.width()/2;
-// // Getting the right coordinates for the subimage square
-// int upleft = center - pow(2,k)/2;
-// int upright = center + pow(2,k)/2;
+PNG* subimage = new PNG(pow(2,k),pow(2,k));
+int center = imIn.width()/2;
+// Getting the right coordinates for the subimage square
+int upleft = center - pow(2,k)/2;
+int upright = center + pow(2,k)/2;
 
-// // Change the pixel by using getPixel, and then change the pixel 
-// for(int x = 0; x < pow(2,k); x++){
-// 	for(int y = 0; y < pow(2,k); y++){
-// 		HSLAPixel* pixel = subimage.getPixel(x,y);
-// 		HSLAPixel* originalpixel = imIn.getPixel(upleft + x, upleft + y);
-// 		*pixel = *originalpixel; 
-// 	}
-// }
+// Change the pixel by using getPixel, and then change the pixel 
+for(int x = 0; x < pow(2,k); x++){
+	for(int y = 0; y < pow(2,k); y++){
+		HSLAPixel* pixel = subimage.getPixel(x,y);
+		HSLAPixel* originalpixel = imIn.getPixel(upleft + x, upleft + y);
+		*pixel = *originalpixel; 
+	}
+}
 
-// root = buildTree(subimage,k);
+root = buildTree(subimage,k);
 
 }
 
@@ -93,6 +93,20 @@ int toqutree::size(const Node* node){
 //Compiles: no
 //Working: no
 toqutree::Node * toqutree::buildTree(PNG * im, int k) {
+
+	if (k==0){
+		stats pngStats = stats(im);
+		pair<int, int> coordinates = makePair(0,0);
+		HSLAPixel avg = pngStats.getAverage(makePair(0,0),makePair(0,0);)
+		Node* newNode = new Node(o,0,avg);
+		newNode->NW = NULL;
+		newNode->NE = NULL;
+		newNode->SW = NULL;
+		newNode->SE = NULL;
+		delete pngStats;
+		delete im;
+		return newNode;
+	}
 	/* your code here */
 
 	//Optimal entropy and points for deciding the split
@@ -161,27 +175,26 @@ void toqutree::prune(double tol){
 /* called by destructor and assignment operator*/
 void toqutree::clear(Node * & curr){
 
+	//Slowly clear
 	//Run through conds to slowly delete the node
-	if (root->NW != NULL){
+	if (curr->NW != NULL){
 		clear(root->NW);
 	}
-	if (root->NE != NULL){
+	if (curr->NE != NULL){
 		clear(root->NE);
 	}
-	if (root->SW != NULL){
+	if (curr->SW != NULL){
 		clear(root->SW);
 	}
-	if (root->SE != NULL){
+	if (curr->SE != NULL){
 		clear(root->SE);
 	}
 
-	if (root->NW == NULL && root->SW == NULL && root->SE == NULL && root->NE == NULL){
+	if (curr->NW == NULL && curr->SW == NULL && curr->SE == NULL && curr->NE == NULL){
 		delete curr;
 		curr = NULL;
 	}
 	else {
-		delete curr;
-		curr = NULL;
 	}
 	//Everything should be deleted now
 }
@@ -193,10 +206,11 @@ void toqutree::clear(Node * & curr){
 /* called by assignment operator and copy constructor */
 toqutree::Node * toqutree::copy(const Node * other) {
 	root = copyTree(other);
+	return root;
 }
 
 toqutree::Node * toqutree::copyTree(const Node * other) {
-		if (other != NULL){
+	if (other != NULL){
 		Node* newNode = new Node(other->center, other->dimension, other->avg);
 
 		newNode->NW = copyTree(other->NW);

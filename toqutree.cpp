@@ -155,7 +155,7 @@ PNG toqutree::renderimg(Node* node){
 	if(node->SE==NULL || node->SW==NULL || node->NE==NULL || node->NW==NULL){
 		//Case where we are at the end of the tree
 		for(int x = 0;x<dim;x++){
-			for(int y = 0; y<y ; y++){
+			for(int y = 0; y<dim ; y++){
 				HSLAPixel* pixel = img.getPixel(x,y);
 				*pixel = node->avg;
 			}
@@ -216,7 +216,7 @@ void toqutree::prune(Node* node,double tol){
 	}
 }
 
-int pruneCheck(Node* prev, Node* curr, double tol){
+int toqutree::pruneCheck(Node* prev, Node* curr, double tol){
 	int avgDistNE = prev->avg.dist(curr->NE->avg);
 	int avgDistNW = prev->avg.dist(curr->NW->avg);
 	int avgDistSE = prev->avg.dist(curr->SE->avg);

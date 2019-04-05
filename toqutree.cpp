@@ -173,12 +173,12 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 
 }
 
-PNG* toqutree::subPNGMaker(PNG im, pair<int,int> ul, pair<int,int> lr, int k){
+PNG* toqutree::subPNGMaker(PNG* im, pair<int,int> ul, pair<int,int> lr, int k){
 	PNG* subimage = new PNG(pow(2,k),pow(2,k));
 	for(int x = ul.first; x < lr.first; x++){
 		for(int y = ul.second; y < lr.second; y++){
 			HSLAPixel* pixel = subimage->getPixel(x,y);
-			HSLAPixel* originalpixel = im.getPixel(x, y);
+			HSLAPixel* originalpixel = im->getPixel(x, y);
 			*pixel = *originalpixel; 
 		}
 	}

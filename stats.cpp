@@ -157,6 +157,12 @@ void stats::initializeHist(PNG& im){
         }
         hist.push_back(vertical2);
     }
+    cout << "print hist size" << endl;
+    for(int i = 0; i < im.width(); i++){
+        for(int j = 0; j < im.height(); j++){
+            cout << hist[i][j].size() << endl;
+        }
+    }
 
     // Now we construct the histogram woweeee
     for(int x2 = 0; x2 < im.width(); x2++){
@@ -164,8 +170,8 @@ void stats::initializeHist(PNG& im){
             
             HSLAPixel* pixel = im.getPixel(x2,y2);
             // Here, we add one to the appropriate bin
-
-            hist[x2][y2][(pixel->h)/10] = hist[x2][y2][(pixel->h)/10] + 1;
+            cout << pixel->h/10 << endl;
+            hist[x2][y2][(int)((pixel->h)/10)] = hist[x2][y2][(int)((pixel->h)/10)] + 1;
             // Going to construct the histograms for each pixel by adding the bins together 
             // cout << "print hist y" << endl;
             // cout << hist[0].size() << endl;
@@ -179,21 +185,30 @@ void stats::initializeHist(PNG& im){
                 }
             }
             // This is the case where y is 0 , so to get hte histograms, we simply add the current histogram to the one to the left of it
-            if( y2 == 0 && x2 >= 1){
+            else if( y2 == 0 && x2 >= 1){
                 for(int bingsoo = 0; bingsoo < 36; bingsoo++){
                     hist[x2][y2][bingsoo] = hist[x2-1][y2][bingsoo] + hist[x2][y2][bingsoo];
                 }
             }
             // Otherwise, we get the histogram by adding the histogram above and to the left of it, and then subtracting the overlapping
             // histogram at x2-1, y2 - 1;
-            if(x2 > 0 && y2 > 0){
+            else if(x2 > 0 && y2 > 0){
                 for(int bingo = 0; bingo < 36; bingo++){
                     hist[x2][y2][bingo] = hist[x2-1][y2][bingo] + hist[x2][y2-1][bingo] + hist[x2][y2][bingo] - hist[x2-1][y2-1][bingo];
                 }
             }
         }
     }
-}
+        int test = 0;
+        for(int b = 0 ; b < 36; b++){
+            test = test + hist[im.width()-1][im.height()-1][b];
+            }
+            cout << "printing last histogram" << endl;
+            cout << test << endl;
+            cout << im.height() * im.width() << endl;
+        }
+    // }
+// }
 
 
 // given a rectangle, return the number of pixels in the rectangle
@@ -252,9 +267,9 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
   // Assuming that getAvg is always called with UL being 0,0 
   // CASE 1:
     // When ul x,y are 0,0
-    cout << "stats.cpp: " << __LINE__ << endl;
+    // cout << "stats.cpp: " << __LINE__ << endl;
         if(ul.first == 0 && ul.second == 0){
-            cout << "is it here?" << endl;
+            // cout << "is it here?" << endl;
             double avgHueX = sumHueX[lr.first][lr.second]/rectArea(ul,lr);
             double avgHueY = sumHueY[lr.first][lr.second]/rectArea(ul,lr);
             double trueavg = atan2(avgHueY,avgHueX) * 180/PI;
@@ -269,10 +284,10 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
             return pixel;
         }
         // CASE 2: getAvg is called with with x and y both greater than 0,0 NO WRAPPING
-        cout << "stats.cpp: " << __LINE__ << endl;
+        // cout << "stats.cpp: " << __LINE__ << endl;
         if(ul.first <= lr.first && ul.second <= lr.second){
-            cout << "is it here2?" << endl;
-            if(ul.first != 0 && lr.first != 0){
+            // cout << "is it here2?" << endl;
+            if(ul.first != 0 && ul.second != 0){
                 double xhueA = sumHueX[lr.first][lr.second];
                 double yhueA = sumHueY[lr.first][lr.second];
                 double xhueB = sumHueX[ul.first-1][lr.second];
@@ -301,10 +316,10 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
                 HSLAPixel returnpixel(trueavg,satavg,lumavg,1.0);
                 return returnpixel;
             }
-            cout << "stats.cpp: " << __LINE__ << endl;
+            // cout << "stats.cpp: " << __LINE__ << endl;
             // Case 3: getAvg is called with x = 0 and y!=0 NO WRAPPING
             if(ul.first == 0 && ul.second != 0){
-                cout << "is it here3?" << endl;
+                // cout << "is it here3?" << endl;
                 double xhueA = sumHueX[lr.first][lr.second];
                 double yhueA = sumHueY[lr.first][lr.second];
                 double xhueC = sumHueX[lr.first][ul.second-1];
@@ -328,9 +343,9 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
                 return returnpixel;
             }
             // Case 4: getAvg is called with y = 0 and x !=0 NO WRAPPING
-            cout << "stats.cpp: " << __LINE__ << endl;
+            // cout << "stats.cpp: " << __LINE__ << endl;
             if(ul.first != 0 && ul.second == 0){
-                cout << "is it here4?" << endl;
+                // cout << "is it here4?" << endl;
                 double xhueA = sumHueX[lr.first][lr.second];
                 double yhueA = sumHueY[lr.first][lr.second];
                 double xhueB = sumHueX[ul.first-1][lr.second];
@@ -354,10 +369,10 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
                 return returnpixel;
             }
         }
-        cout << "stats.cpp: " << __LINE__ << endl;
+        // cout << "stats.cpp: " << __LINE__ << endl;
         // Case 5: getAvg is called with y = 0  X WRAPPING
         if(ul.first >= lr.first && ul.second <= lr.second){
-            cout << "is it here5?" << endl;
+            // cout << "is it here5?" << endl;
             if(ul.second == 0 ){
              double xhueA = sumHueX[lr.first][lr.second];
              double yhueA = sumHueY[lr.first][lr.second];
@@ -385,9 +400,9 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
         }
         }
         //// Case 6: getAvg is called with y != 0 X WRAPPING
-        cout << "stats.cpp: " << __LINE__ << endl;
+        // cout << "stats.cpp: " << __LINE__ << endl;
         if(ul.first >= lr.first && ul.second <= lr.second){
-            cout << "is it here6?" << endl;
+            // cout << "is it here6?" << endl;
             double xhueA = sumHueX[lr.first][lr.second];
              double yhueA = sumHueY[lr.first][lr.second];
              double xhueB = sumHueX[hist.size()-1][lr.second];
@@ -422,14 +437,14 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
                 return returnpixel;
         }
         // Case 7: getAvg is called with x = 0 and y != 0 Y WRAPPING
-        cout << "stats.cpp: " << __LINE__ << endl;
-        cout << ul.first << endl;
-        cout << lr.first << endl;
-        cout << "y values" << endl;
-        cout << ul.second << endl;
-        cout << lr.second << endl;
+        // cout << "stats.cpp: " << __LINE__ << endl;
+        // cout << ul.first << endl;
+        // cout << lr.first << endl;
+        // cout << "y values" << endl;
+        // cout << ul.second << endl;
+        // cout << lr.second << endl;
         if(ul.first <= lr.first && ul.second >= lr.second){
-            cout << "being called correctly?" << endl;
+            // cout << "being called correctly?" << endl;
             if(ul.first == 0){
              double xhueA = sumHueX[lr.first][lr.second];
              double yhueA = sumHueY[lr.first][lr.second];
@@ -455,7 +470,7 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
             return returnpixel;
             }
             else if(ul.first != 0){
-                cout << "called y wrapping no x zero" << endl;
+                // cout << "called y wrapping no x zero" << endl;
              double xhueA = sumHueX[lr.first][lr.second];
              double yhueA = sumHueY[lr.first][lr.second];
              double xhueB = sumHueX[lr.first][hist[0].size()-1];
@@ -488,10 +503,10 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
  
             }
         }
-        cout << "stats.cpp: " << __LINE__ << endl;
+        // cout << "stats.cpp: " << __LINE__ << endl;
         // CASE 9 Double wrapping come back to this later 
         if(ul.first >= lr.first && ul.second >= lr.second){
-            cout << " YAYEET" << endl;
+            // cout << " YAYEET" << endl;
             double xhueA = sumHueX[hist.size()-1][hist[0].size()-1];
             double yhueA = sumHueY[hist.size()-1][hist[0].size()-1];
             double xhueB = sumHueX[hist.size()-1][lr.second];
@@ -582,10 +597,10 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
             // - sumSat[lr.first][ul.second-1] + sumSat[lr.first][lr.second] - sumSat[hist.size()-1][ul.second-1] + sumSat[lr.first][ul.second-1]
             // + sumSat[ul.first-1][lr.second] + sumSat[ul.first-1][ul.second-1] + sumSat[lr.first][lr.second])/rectArea(ul,lr);
 
-            cout << "print rectarea" << endl;
-            cout << rectArea(ul,lr) << endl;
-            cout << "print satavg" << endl;
-            cout << satavg * rectArea(ul,lr) << endl;
+            // cout << "print rectarea" << endl;
+            // cout << rectArea(ul,lr) << endl;
+            // cout << "print satavg" << endl;
+            // cout << satavg * rectArea(ul,lr) << endl;
 
             // double lumavg = (sumLum[hist.size()-1][hist[0].size()-1] - sumLum[ul.first-1][hist[0].size()-1] + sumLum[lr.first][hist[0].size()-1]
             // - sumLum[lr.first][ul.second-1] + sumLum[lr.first][lr.second] - sumLum[hist.size()-1][ul.second-1] + sumLum[lr.first][ul.second-1]
@@ -597,7 +612,7 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
         }
         // If ul and lr are the same;
         if(ul.first == lr.first && ul.second == lr.second){
-            cout << "stats.cpp: " << __LINE__ << endl;
+            // cout << "stats.cpp: " << __LINE__ << endl;
             if (ul.first == 0 && ul.second == 0){
                 double avgHueX = sumHueX[0][0];
                 double avgHueY = sumHueY[0][0];
@@ -613,7 +628,7 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
                 return returnpixel;
             }
             else if(ul.first == 0 && ul.second != 0){
-                cout << "stats.cpp: " << __LINE__ << endl;
+                // cout << "stats.cpp: " << __LINE__ << endl;
                 double xhueA = sumHueX[lr.first][lr.second];
                 double yhueA = sumHueY[lr.first][lr.second];
                 double xhueB = sumHueX[lr.first][lr.second-1];
@@ -634,7 +649,7 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
                 return returnpixel;    
             }
             else if(ul.first != 0 && ul.second == 0){
-                cout << "stats.cpp: " << __LINE__ << endl;
+                // cout << "stats.cpp: " << __LINE__ << endl;
                 double xhueA = sumHueX[lr.first][lr.second];
                 double yhueA = sumHueY[lr.first][lr.second];
                 double xhueB = sumHueX[lr.first-1][lr.second];
@@ -655,7 +670,7 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
                 return returnpixel;    
             }
             else{
-                cout << "is it here?theendxd" << endl;
+                // cout << "is it here?theendxd" << endl;
                 double xhueA = sumHueX[lr.first][lr.second];
                 double yhueA = sumHueY[lr.first][lr.second];
                 double xhueB = sumHueX[lr.first-1][lr.second];
@@ -688,6 +703,69 @@ HSLAPixel stats::getAvg(pair<int,int> ul, pair<int,int> lr){
     }
 
 vector<int> stats::buildHist(pair<int,int> ul, pair<int,int> lr){
+    vector<int> rvect;
+    for(int i = 0; i < 36; i++){
+        rvect.push_back(BHHelper(ul,lr,i));
+    }
+    return rvect;
+}
+
+int stats::BHHelper(pair<int,int> ul, pair<int,int> lr,int i){
+    if(ul.first <= lr.first && ul.second <= lr.second){
+        if(ul.first == 0 && ul.second == 0 ){
+            return hist[lr.first][lr.second][i];
+        }
+        else if(ul.first != 0 && ul.second ==0){
+            int hi1 = hist[lr.first][lr.second][i];
+            int hi2 = hist[ul.first-1][lr.second][i];
+            return hi1-hi2;
+        }
+        else if(ul.first == 0 && ul.second != 0){
+            int hi1 = hist[lr.first][lr.second][i];
+            int hi2 = hist[ul.first][lr.second-1][i];
+            return hi1 - hi2;
+        }
+        else{
+            int hi1 = hist[lr.first][lr.second][i];
+            int hi2 = hist[ul.first-1][lr.second][i];
+            int hi3 = hist[lr.first][ul.second-1][i];
+            int hi4 = hist[ul.first-1][ul.second-1][i];
+            return hi1 - hi2 - hi3 + hi4;
+        }
+    }
+    if(ul.first > lr.first && ul.second <= lr.second){
+        pair<int,int> uright(ul.first,ul.second);
+        pair<int,int> lright(hist.size()-1,lr.second);
+        pair<int,int> uleft(0,ul.second);
+        pair<int,int> lleft(lr.first,lr.second);
+        return BHHelper(uright,lright,i) + BHHelper(uleft,lleft,i);
+    }
+
+    if(ul.first <= lr.first && ul.second > lr.second){
+        pair<int,int> udown(ul.first,ul.second);
+        pair<int,int> ldown(lr.first,hist[0].size()-1);
+        pair<int,int> uup(ul.first,0);
+        pair<int,int> lup(lr.first,lr.second);
+        return BHHelper(udown,ldown,i) + BHHelper(uup,lup,i);
+    }
+
+    else{
+        pair<int,int> ulul(0,0);
+        pair<int,int> ullr = lr;
+
+        pair<int,int> urul(ul.first,0);
+        pair<int,int> urlr(hist.size()-1,lr.second);
+
+        pair<int,int> lrul = ul;
+        pair<int,int> lrlr(hist.size()-1,hist[0].size()-1);
+
+        pair<int,int> llul(0,ul.second);
+        pair<int,int> lllr(lr.first,hist[0].size()-1);
+        return BHHelper(ulul,ullr,i) + BHHelper(urul,urlr,i) + BHHelper(lrul,lrlr,i) + BHHelper(llul,lllr,i);
+    }
+}
+/**
+vector<int> stats::buildHist(pair<int,int> ul, pair<int,int> lr){
    // when ul and lr are the same
     if(ul.first == lr.first && ul.second == lr.second){
         if(ul.first == 0 && ul.second == 0){
@@ -718,7 +796,7 @@ vector<int> stats::buildHist(pair<int,int> ul, pair<int,int> lr){
                 hA[i] = hA[i] - hB[i] - hD[i] + hC[i];
             }
             return hA;
-        }
+        }   
     }
     // ul is 0,0 case
     if(ul.first == 0 && ul.second == 0 && lr.first != 0 && lr.second != 0){
@@ -727,6 +805,7 @@ vector<int> stats::buildHist(pair<int,int> ul, pair<int,int> lr){
     }
     if( ul.first <= lr.first && ul.second <= lr.second){
         cout << "called correclty? " <<  endl;
+        cout << "verifying that this is the rolledback stats" << endl;
     //     vector<int> oghistogram = hist[lr.first][lr.second];
     //     vector<int> blhistogram = hist[ul.first-1][lr.second];
     //     vector<int> uphistogram = hist[ul.first-1][ul.second-1];
@@ -759,6 +838,10 @@ vector<int> stats::buildHist(pair<int,int> ul, pair<int,int> lr){
     if(ul.first == 0 && ul.second == 0){
         vector<int> histogram = hist[lr.first][lr.second];
         return histogram;
+    }
+    else{
+        cout << "temporary" << endl;
+        return hist[lr.first][lr.second];
     }
     }
     // Case 5: getAvg is called with y = 0  X WRAPPING
@@ -827,9 +910,13 @@ vector<int> stats::buildHist(pair<int,int> ul, pair<int,int> lr){
     
 
 
-// takes a distribution and returns entropy
+
+
+
+/**/// takes a distribution and returns entropy
 // partially implemented so as to avoid rounding issues.
 // is already done huheuheuheuh
+
 double stats::entropy(vector<int> & distn,int area){
 
     double entropy = 0.;

@@ -78,7 +78,7 @@ public:
      * bins holding no pixels should not be included in the sum. */
     double entropy(vector<int> & d ,int area);
 
-     // Helper function that initializes sumHueX;
+    // Helper function that initializes sumHueX;
     void initializeHueX(PNG& im);
 
     // Helper function that initializes sumHueY;
@@ -93,6 +93,10 @@ public:
     // Helper function that initializes sumHist;
     void initializeHist(PNG& im);
 
+    int BHHelper(pair<int,int> ul, pair<int,int> lr,int i);
+
 };
+
+    
 
 #endif

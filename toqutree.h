@@ -125,7 +125,7 @@ public:
 
    toqutree(PNG & imIn,int k);
 
-   PNG toqutree::subPNGMaker(PNG * im, pair<int,int> ul, pair<int,int> lr, int k);
+   PNG subPNGMaker(PNG * im, pair<int,int> ul, pair<int,int> lr, int k);
 
    /**
     * Render returns a PNG image consisting of the pixels

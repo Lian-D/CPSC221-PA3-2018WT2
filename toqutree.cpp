@@ -133,10 +133,10 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 		stats* pngStats = new stats(*im);
 		for (int y=incrementSpace; y < 3*incrementSpace; y++){
 			for (int x = incrementSpace; x< 3*incrementSpace; x++){
-				int SE = pngStats.entropy(make_pair(x,y), make_pair(x+subDim - 1, y+subDim - 1));
-				int SW = pngStats.entropy(make_pair(x+subDim,y), make_pair(x+subDim+subDim -1, y+subDim - 1));
-				int NE = pngStats.entropy(make_pair(x,y+subDim), make_pair(x+subDim-1, y+subDim+subDim-1));
-				int NW = pngStats.entropy(make_pair(x+subDim,y+subDim), make_pair(x+subDim+subDim-1, y+subDim+subDim-1));
+				int SE = pngStats->entropy(make_pair(x,y), make_pair(x+subDim - 1, y+subDim - 1));
+				int SW = pngStats->entropy(make_pair(x+subDim,y), make_pair(x+subDim+subDim -1, y+subDim - 1));
+				int NE = pngStats->entropy(make_pair(x,y+subDim), make_pair(x+subDim-1, y+subDim+subDim-1));
+				int NW = pngStats->entropy(make_pair(x+subDim,y+subDim), make_pair(x+subDim+subDim-1, y+subDim+subDim-1));
 
 				int avgEntropy = (SE+SW+NE+NW)/4;
 
@@ -173,7 +173,7 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 
 }
 
-PNG toqutree::subPNGMaker(PNG * im, pair<int,int> ul, pair<int,int> lr, int k){
+PNG* toqutree::subPNGMaker(PNG * im, pair<int,int> ul, pair<int,int> lr, int k){
 	PNG* subimage = new PNG(pow(2,k),pow(2,k));
 	for(int x = ul.first; x < lr.first; x++){
 		for(int y = ul.second; y < lr.second; y++){
@@ -182,7 +182,7 @@ PNG toqutree::subPNGMaker(PNG * im, pair<int,int> ul, pair<int,int> lr, int k){
 			*pixel = *originalpixel; 
 		}
 	}
-	return *subimage;
+	return subimage;
 }
 
 //Debug Sheet

@@ -175,7 +175,6 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 	delete SW;
 	delete pngStats;
 	return newNode;
-	}
 }	
 
 PNG* toqutree::subPNG(PNG* originalIm, pair<int,int>start,int k){

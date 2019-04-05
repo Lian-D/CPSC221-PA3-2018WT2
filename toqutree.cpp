@@ -130,7 +130,7 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 		int subDim = k/2;
 		int incrementSpace = k/4;
 
-		stats* pngStats = stats(*im);
+		stats* pngStats = new stats(*im);
 		for (int y=incrementSpace; y < 3*incrementSpace; y++){
 			for (int x = incrementSpace; x< 3*incrementSpace; x++){
 				int SE = pngStats.entropy(make_pair(x,y), make_pair(x+subDim - 1, y+subDim - 1));

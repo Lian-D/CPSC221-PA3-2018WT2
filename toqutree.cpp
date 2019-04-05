@@ -181,8 +181,8 @@ PNG* toqutree::subPNG(PNG* originalIm, pair<int,int>start,int k){
 	for(int x = 0;x<originalIm->width(); x++){
 		for(int y = 0;y<originalIm->height(); y++){	
 			//Handles wrapping 		
-			HSLAPixel pixelSpot = *(subImg->getPixel(x,y));
-			pixelSpot= *(originalIm->getPixel((start.first+x)%originalIm->width(),(start.second+y)%originalIm->width()));
+			HSLAPixel* pixelSpot = (subImg->getPixel(x,y));
+			*pixelSpot= *(originalIm->getPixel((start.first+x)%originalIm->width(),(start.second+y)%originalIm->width()));
 		}
 	}
 	return subImg;

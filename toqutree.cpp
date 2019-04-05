@@ -49,12 +49,13 @@ int upleft = center - pow(2,k)/2;
 int upright = center + pow(2,k)/2;
 
 // Change the pixel by using getPixel, and then change the pixel 
+// Help from a TA here
 for(int x = 0; x < pow(2,k); x++){
 	for(int y = 0; y < pow(2,k); y++){
-		*(subimage.getPixel(i,j))=*(imIn.getPixel(i,j));
+		*(subimage.getPixel(x,y))=*(imIn.getPixel(x,y));
 		}
 	}
-root=buildTree(&subimage, size)
+root=buildTree(&subimage, pow(2,k));
 }
 
 //Debug Sheet
@@ -98,12 +99,12 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 	if(k==2){
 		//2x2 pretty straight foward
 		stats* pngStats= new stats(*im);
-		HSLAPixel avg= stat->getAvg(pair<int,int>(0,0),pair<int,int>(1,1));
+		HSLAPixel avg= pngStat->getAvg(pair<int,int>(0,0),pair<int,int>(1,1));
 		Node* newNode= new Node(pair<int,int>(1,1), 2, avg);
-		curr->SE = new Node(pair<int,int>(0,0),1,*(im->getPixel(1,1)));
-		curr->SW = new Node(pair<int,int>(0,0),1,*(im->getPixel(0,1)));
-		curr->NE = new Node(pair<int,int>(0,0),1,*(im->getPixel(1,0)));
-		curr->NW = new Node(pair<int,int>(0,0),1,*(im->getPixel(0,0)));
+		newNode->SE = new Node(pair<int,int>(0,0),1,*(im->getPixel(1,1)));
+		newNode->SW = new Node(pair<int,int>(0,0),1,*(im->getPixel(0,1)));
+		newNode->NE = new Node(pair<int,int>(0,0),1,*(im->getPixel(1,0)));
+		newNode->NW = new Node(pair<int,int>(0,0),1,*(im->getPixel(0,0)));
 		delete pngStats;
 		return newNode;
 	}

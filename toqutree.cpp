@@ -202,11 +202,11 @@ void toqutree::prune(double tol){
 //Working: no, yet to be implemented
 //@TODO
 void toqutree::prune(Node* node,double tol){
-	if (pruneCheck == 1){
+	if (pruneCheck(node,node,tol) == 1){
 		clear(node);
 	}
 	else{
-		if(node->dim >2){
+		if(node->dimension >2){
 			prune(node->NW, tol);
 			prune(node->NE, tol);
 			prune(node->SW, tol);

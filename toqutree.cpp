@@ -97,7 +97,7 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 	if (k==0){
 		stats* pngStats = new stats(*im);
 		pair<int, int> coordinates = make_pair(0,0);
-		HSLAPixel avg = pngStats.getAvg(make_pair(0,0),make_pair(0,0));
+		HSLAPixel avg = *pngStats.getAvg(make_pair(0,0),make_pair(0,0));
 		Node* newNode = new Node(coordinates,0,avg);
 		newNode->NW = NULL;
 		newNode->NE = NULL;
@@ -161,10 +161,10 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 		}
 		Node* newNode = new Node(ul_SE_Coordinates, k, pngStats.getAvg(ul_SE_Coordinates,lr_SE_Coordinates));
 
-		newNode->*SE = buildTree(subPNGMaker(im,ul_SE_Coordinates,lr_SE_Coordinates,k-1), k-1);
-		newNode->*SW = buildTree(subPNGMaker(im,ul_SW_Coordinates,lr_SW_Coordinates,k-1), k-1);
-		newNode->*NE = buildTree(subPNGMaker(im,ul_NE_Coordinates,lr_NE_Coordinates,k-1), k-1);
-		newNode->*SW = buildTree(subPNGMaker(im,ul_NW_Coordinates,lr_NW_Coordinates,k-1), k-1);
+		*newNode->SE = buildTree(subPNGMaker(im,ul_SE_Coordinates,lr_SE_Coordinates,k-1), k-1);
+		*newNode->SW = buildTree(subPNGMaker(im,ul_SW_Coordinates,lr_SW_Coordinates,k-1), k-1);
+		*newNode->NE = buildTree(subPNGMaker(im,ul_NE_Coordinates,lr_NE_Coordinates,k-1), k-1);
+		*newNode->SW = buildTree(subPNGMaker(im,ul_NW_Coordinates,lr_NW_Coordinates,k-1), k-1);
 
 		delete pngStats;
 		delete im;

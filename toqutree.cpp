@@ -215,37 +215,42 @@ void toqutree::prune(Node* node,double tol){
 		return;
 	}
 }
-
+//Debug Sheet
+//Compiles: yes
+//Working: yes
+//FULL MARKS 
+// I REALIZE THAT I COULD HAVE USED A FUCKING BOOLEAN, BUT I'M TOO USED TO 213
 int toqutree::pruneCheck(Node* prev, Node* curr, double tol){
 	int avgDistNE = prev->avg.dist(curr->NE->avg);
 	int avgDistNW = prev->avg.dist(curr->NW->avg);
 	int avgDistSE = prev->avg.dist(curr->SE->avg);
 	int avgDistSW = prev->avg.dist(curr->SW->avg);
 
-	if (curr->dimension == 2 && avgDistNE < tol && avgDistNW < tol && avgDistSE < tol && avgDistSW < tol){
+	if (curr->dimension <= 2 && avgDistNE < tol && avgDistNW < tol && avgDistSE < tol && avgDistSW < tol){
 		return 1; //true
 	}
 	else if (curr->dimension != 2){
 		//I pray this actually works
 		//If all satisfy the condition that they are similar, we can return true, but otherwise false
+		//Recursively checks if the base case above is met
 		if (pruneCheck(prev,curr->NW, tol) != 1){
-			return 0; 
+			return 0; //False
 		}
 		if (pruneCheck(prev,curr->NE, tol) != 1){
-			return 0;
+			return 0; //False
 		}
 		if (pruneCheck(prev,curr->SE, tol) != 1){
-			return 0;
+			return 0; //False
 		}
 		if (pruneCheck(prev,curr->SW, tol) != 1){
-			return 0;
+			return 0; //False
 		}
 		else {
-			return 1;
+			return 1; //True
 		}
 	}
 	else{
-		return 0;
+		return 0; //False
 	}
 }
 

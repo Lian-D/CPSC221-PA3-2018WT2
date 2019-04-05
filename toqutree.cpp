@@ -95,9 +95,9 @@ int toqutree::size(const Node* node){
 toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 	//Case inwhich the we have the smallest division
 	if (k==0){
-		stats pngStats = stats(im);
-		pair<int, int> coordinates = make_Pair(0,0);
-		HSLAPixel avg = pngStats.getAverage(make_Pair(0,0),make_Pair(0,0);)
+		stats pngStats = new stats(im);
+		pair<int, int> coordinates = make_pair(0,0);
+		HSLAPixel avg = pngStats.getAvg(make_pair(0,0),make_pair(0,0));
 		Node* newNode = new Node(o,0,avg);
 		newNode->NW = NULL;
 		newNode->NE = NULL;
@@ -166,7 +166,7 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 		newNode->NE = buildTree(subPNGMaker(im,ul_NE_Coordinates,lr_NE_Coordinates,k-1));
 		newNode->SW = buildTree(subPNGMaker(im,ul_NW_Coordinates,lr_NW_Coordinates,k-1));
 
-				delete pngStats;
+		delete pngStats;
 		delete im;
 		return newNode;
 	}

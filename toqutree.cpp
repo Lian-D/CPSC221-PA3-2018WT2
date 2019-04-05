@@ -92,6 +92,10 @@ int toqutree::size(const Node* node){
 //Working: haven't done bigger cases yet
 //@TODO
 toqutree::Node * toqutree::buildTree(PNG * im, int k) {
+
+	pair<int,int> start=make_pair(k/2, k/2);
+	int boundary=k/2;
+
 	if(k==1){
 		//Pixel Doesn't matter just return 1 pixel
 		HSLAPixel avg= *(im->getPixel(0,0));
@@ -112,78 +116,75 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 	}
 	else {
 		stats* pngStats= new stats(*im);
-		HSLAPixel avg= pngStats->getAvg(pair<int,int>(0,0),pair<int,int>(1,1));
-		Node* newNode= new Node(pair<int,int>(1,1), 2, avg);
-		newNode->SE = new Node(pair<int,int>(0,0),1,*(im->getPixel(1,1)));
-		newNode->SW = new Node(pair<int,int>(0,0),1,*(im->getPixel(0,1)));
-		newNode->NE = new Node(pair<int,int>(0,0),1,*(im->getPixel(1,0)));
-		newNode->NW = new Node(pair<int,int>(0,0),1,*(im->getPixel(0,0)));
+		pair<int, int> optimalCentre = findCtr(start, boundary, k, pngStats, im);
+		
+		pair<int,int> SE= optimalCentre;
+		pair<int,int> SW= make_pair((x+boundary) % k, y);
+		pair<int,int> NE= make_pair(x,(y+boundary )% k);
+		pair<int,int> SW= make_pair((x+boundary) % k,(y+boundary) % k);
+
+		Node * newNode= new Node(center, k, avg);
+		PNG* subSE= subPNG(PNG* im, SE,int k);
+		PNG* subSW= subPNG(PNG* im, SW,int k);
+		PNG* subNE= subPNG(PNG* im, NE,int k);
+		PNG* subNW= subPNG(PNG* im, NW,int k);
+
+		newNode->NW = buildTree(subNW, k/2);
+		newNode->NE = buildTree(subNE, k/2);
+		newNode->SW = buildTree(subSW, k/2);
+		newNode->SE = buildTree(subSE, k/2);
+
+		delete subNE;
+		delete subNW;
+		delete subSE;
+		delete subSW;
 		delete pngStats;
+		
 		return newNode;
-	// 	//Static vars
-	// 	stats* pngStats= new stats(*im);
-	// 	pair<int,int> pivotStart = make_pair(k/4, k/4);
-	// 	int boundary=k/2;
-	// 	HSLAPixel avg = pngStats->getAvg(make_pair(0,0),make_pair(k-1,k-1));
-
-	// 	//Thing we cycle through to determine optimal points
-	// 	pair<int,int> NWStart;
-	// 	pair<int,int> NEStart;
-	// 	pair<int,int> SEStart;
-	// 	pair<int,int> SWStart;
-
-	// 	//Optimal splitting point
-	// 	pair<int,int> optimalCtr;
-	// 	int currMinEntropy;
-
-	// 	//SEARCH HERE
-	// 	for (int y=pivotStart.first; y < pivotStart.first+boundary; y++){
-	// 		for (int x = pivotStart.first; x< pivotStart.first+boundary; x++){
-	// 			//Entropy for respective corners;
-	// 			int SE = pngStats->entropy(make_pair(x,y), make_pair((x+boundary-1) % k,(y+boundary-1) % k));
-	// 			int SW = pngStats->entropy(make_pair((x+boundary) % k,y), make_pair((x-1) % k,(y+boundary-1)%k));
-	// 			int NE = pngStats->entropy(make_pair(x,(y+boundary)% k), make_pair((x+boundary-1)%k,(y-1) % k));
-	// 			int NW = pngStats->entropy(make_pair((x+boundary) % k,(y+boundary) % k), make_pair((x-1) % k,(y-1) % k));
-	// 			int avgEntropy = (SE+SW+NE+NW)/4;
-	// 			if (currMinEntropy == NULL){
-	// 				currMinEntropy = avgEntropy;
-	// 			}
-	// 			if (currMinEntropy >= avgEntropy){
-	// 				currMinEntropy = avgEntropy;
-	// 				optimalCtr = make_pair(x,y);
-	// 				NWStart = make_pair((x+boundary) % k,(y+boundary) % k);
-	// 				NEStart = make_pair(x,(y+boundary)% k);
-	// 				SEStart = make_pair(x,y);
-	// 				SWStart = make_pair((x+boundary) % k,y);
-
-	// 			}
-	// 		}
-	// 	}
-	// 	//Create subPNGs
-	// 	PNG* SE = subPNG(im, SEStart,k);
-	// 	PNG* SW = subPNG(im, SWStart,k);
-	// 	PNG* NE = subPNG(im, NEStart,k);
-	// 	PNG* NW = subPNG(im, NWStart,k);
-	// 	//Allocate sub PNGs
-	// 	Node * newNode= new Node(optimalCtr, k, avg);
-	// 	newNode->SE = buildTree(SE, k/2);
-	// 	newNode->SW = buildTree(SW, k/2);
-	// 	newNode->NE = buildTree(NE, k/2);
-	// 	newNode->NW = buildTree(NW, k/2);
-
-	// 	delete NE;
-	// 	delete NW;
-	// 	delete SE;
-	// 	delete SW;
-	// 	delete pngStats;
-	// 	return newNode;
 	}
 }	
 
-// pair<int,int>toqutree::getBestCtr(pair<int,int> start, int boundary, int k, stats* stats, PNG* im){
-// 	pair<int, int> optimal = make_pair(k/2,k/2);
-// 	double minEntropy = 55
-// }
+pair<int,int>toqutree::findCtr(pair<int,int> start, int boundary, int k, stats* stats, PNG* im){
+	pair<int, int> optimal = make_pair(k/2,k/2);
+	double minEntropy = avgEntropy(optimal, k/2, stats, im);
+
+	for (int x = start.first; x < (start.first+boundary); x++){
+		for (int y = start.second; y < (start.second+boundary); y++){
+			double currEntropy = avgEntropy(make_pair(x,y), k/2, stats, im);
+
+			if (currEntropy=<minEntropy){
+				minEntropy = currEntropy;
+				optimal = make_pair(x,y);
+			}
+		}
+	}
+	return optimal;
+}
+
+double toqutree::avgEntropy(pair<int,int> coordinate, int k, stats* stats, PNG* im){
+	int boundary = k/2;
+
+	//NE
+	pair<int,int> NE_ul= make_pair(x,(y+boundary) % k);
+	pair<int,int> NE_lr= make_pair((x+boundary-1) % k,(y-1) %k );
+	double NE= stat->entropy(NE1,NE2);
+	//NW
+	pair<int,int> NW_ul= make_pair((x+boundary) % k,(y+boundary) % k);
+	pair<int,int> NW_lr= make_pair((x-1) % k,(y-1) % k);
+	double NW= stat->entropy(NW1,NW2);
+	//SW
+	pair<int,int> SE_ul= make_pair(x,y);
+	pair<int,int> SE_lr= make_pair((x+boundary-1) % k,(y+boundary-1) % k);
+	double SE= stat->entropy(SE1,SE2);
+	//SE
+	pair<int,int> SW_ul= make_pair((x+boundary )% k,y);
+	pair<int,int> SW_lr= make_pair((x-1) % k,(y+boundary-1) % k);
+	double SW= stat->entropy(SW1,SW2);
+
+	return (EntropySE+EntropySW+EntropyNE+EntropyNW)/4;
+
+}
+
 
 PNG* toqutree::subPNG(PNG* originalIm, pair<int,int>start,int k){
 	PNG* subImg= new PNG(k/2, k/2);

@@ -126,6 +126,8 @@ public:
    toqutree(PNG & imIn,int k);
 
    PNG* subPNG(PNG* originalIm, pair<int,int>start,int k);
+   pair<int,int> findCtr(pair<int,int> start, int boundary, int k, stats* stats, PNG* im);
+   double avgEntropy(pair<int,int> coordinate, int k, stats* stats, PNG* im)
    /**
     * Render returns a PNG image consisting of the pixels
     * stored in the tree. may be used on pruned trees. Draws

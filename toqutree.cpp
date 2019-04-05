@@ -110,7 +110,7 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 		delete pngStats;
 		return newNode;
 	}
-		/2x2 pretty straight foward
+		//2x2 pretty straight foward
 		stats* pngStats= new stats(*im);
 		HSLAPixel avg= pngStats->getAvg(pair<int,int>(0,0),pair<int,int>(1,1));
 		Node* newNode= new Node(pair<int,int>(1,1), 2, avg);

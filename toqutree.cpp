@@ -51,7 +51,7 @@ int upright = center + pow(2,k)/2;
 // Change the pixel by using getPixel, and then change the pixel 
 for(int x = 0; x < pow(2,k); x++){
 	for(int y = 0; y < pow(2,k); y++){
-		HSLAPixel* pixel = subimage.getPixel(x,y);
+		HSLAPixel* pixel = *subimage.getPixel(x,y);
 		HSLAPixel* originalpixel = imIn.getPixel(upleft + x, upleft + y);
 		*pixel = *originalpixel; 
 	}
@@ -173,7 +173,7 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 
 }
 
-PNG toqutree::subPNGMaker(PNG * im, pair<int,int> ul, pair<int,int> lr, int k){
+PNG* toqutree::subPNGMaker(PNG * im, pair<int,int> ul, pair<int,int> lr, int k){
 	PNG* subimage = new PNG(pow(2,k),pow(2,k));
 	for(int x = ul.first; x < lr.first; x++){
 		for(int y = ul.second; y < lr.second; y++){

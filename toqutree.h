@@ -125,7 +125,7 @@ public:
 
    toqutree(PNG & imIn,int k);
 
-   PNG* subPNG(PNG* subImg, PNG* originalIm, pair<int,int>side, int k);
+   PNG* subPNG(PNG* originalIm, pair<int,int>start,int k)
    /**
     * Render returns a PNG image consisting of the pixels
     * stored in the tree. may be used on pruned trees. Draws

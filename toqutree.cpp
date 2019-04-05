@@ -222,7 +222,7 @@ int toqutree::pruneCheck(Node* prev, Node* curr, double tol){
 	int avgDistSE = prev->avg.dist(curr->SE->avg);
 	int avgDistSW = prev->avg.dist(curr->SW->avg);
 
-	if (curr->dimension == 2 && avgDistNE < tol && avgDistNW < tol && avgDistSE < tol && avgDistSW < tol &&){
+	if (curr->dimension == 2 && avgDistNE < tol && avgDistNW < tol && avgDistSE < tol && avgDistSW < tol){
 		return 1; //true
 	}
 	else if (curr->dimension != 2){

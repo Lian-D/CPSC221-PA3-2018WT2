@@ -131,13 +131,13 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 		for (int y=pivotStart.first; y < pivotStart.first+boundary; y++){
 			for (int x = pivotStart.first; x< pivotStart.first+boundary; x++){
 				//Entropy for respective corners;
-				int SE = pngStats.entropy(make_pair(x,y), make_pair((x+boundary-1) % k,(y+boundary-1) % k);
-				int SW = pngStats.entropy(make_pair((x+boundary) % k,y), make_pair((x-1) % k,(y+boundary-1)%k));
-				int NE = pngStats.entropy(make_pair(x,(y+boundary)% k), make_pair((x+boundary-1)%k,(y-1) % k));
-				int NW = pngStats.entropy(make_pair((x+boundary) % k,(y+boundary) % k), make_pair((x-1) % k,(y-1) % k);
+				int SE = pngStats->entropy(make_pair(x,y), make_pair((x+boundary-1) % k,(y+boundary-1) % k);
+				int SW = pngStats->entropy(make_pair((x+boundary) % k,y), make_pair((x-1) % k,(y+boundary-1)%k));
+				int NE = pngStats->entropy(make_pair(x,(y+boundary)% k), make_pair((x+boundary-1)%k,(y-1) % k));
+				int NW = pngStats->entropy(make_pair((x+boundary) % k,(y+boundary) % k), make_pair((x-1) % k,(y-1) % k);
 				int avgEntropy = (SE+SW+NE+NW)/4;
 
-				else if (currMinEntropy < avgEntropy){
+				if (currMinEntropy >= avgEntropy){
 					currMinEntropy = avgEntropy;
 					optimalCtr = make_pair(x,y);
 						NWStart = make_pair((x+boundary) % k,(y+boundary) % k);
@@ -163,11 +163,12 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 		delete SE;
 		delete SW;
 		delete pngStats;
-		
-		return newNode;
-	}
 
-}
+		return newNode;
+		}
+
+	}
+}	
 
 PNG* toqutree::subPNG(PNG* originalIm, pair<int,int>start,int k){
 	PNG* subImg= new PNG(k/2, k/2);

@@ -146,7 +146,7 @@ PNG toqutree::renderimg(Node* node){
 		//Case where we are at the end of the tree
 		for(int x = 0;x<dim;x++){
 			for(int y = 0; y<y ; y++){
-				HSLAPixel* = img.getPixel(x,y);
+				HSLAPixel* pixel = img.getPixel(x,y);
 				pixel = node->avg;
 			}
 		}

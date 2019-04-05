@@ -51,14 +51,10 @@ int upright = center + pow(2,k)/2;
 // Change the pixel by using getPixel, and then change the pixel 
 for(int x = 0; x < pow(2,k); x++){
 	for(int y = 0; y < pow(2,k); y++){
-		HSLAPixel* pixel = subimage->getPixel(x,y);
-		HSLAPixel* originalpixel = imIn.getPixel(upleft + x, upleft + y);
-		*pixel = *originalpixel; 
+		*(subimage.getPixel(i,j))=*(imIn.getPixel(i,j));
+		}
 	}
-}
-
-root = buildTree(subimage,k);
-
+root=buildTree(&subimage, size)
 }
 
 //Debug Sheet
@@ -93,108 +89,96 @@ int toqutree::size(const Node* node){
 //Compiles: no
 //Working: no
 toqutree::Node * toqutree::buildTree(PNG * im, int k) {
-	//Case inwhich the we have the smallest division
-	if (k==0){
-		stats* pngStats = new stats(*im);
-		pair<int, int> coordinates = make_pair(0,0);
-		HSLAPixel avg = pngStats->getAvg(make_pair(0,0),make_pair(0,0));
-		Node* newNode = new Node(coordinates,0,avg);
-		newNode->NW = NULL;
-		newNode->NE = NULL;
-		newNode->SW = NULL;
-		newNode->SE = NULL;
-		delete pngStats;
-		delete im;
+	if(k==1){
+		//Pixel Doesn't matter just return 1 pixel
+		HSLAPixel avg= *(im->getPixel(0,0));
+		Node* newNode =  new Node(pair<int,int>(0,0), 1, avg);
 		return newNode;
 	}
-	//Not the smallest division
-	else {
-		//For the SE
-		pair<int, int> ul_SE_Coordinates;
-		pair<int, int> lr_SE_Coordinates;
-
-		//For the SW
-		pair<int, int> ul_SW_Coordinates;
-		pair<int, int> lr_SW_Coordinates;
-
-		//For the NE 
-		pair<int, int> ul_NE_Coordinates;
-		pair<int, int> lr_NE_Coordinates;
-
-		//For the NW
-		pair<int, int> ul_NW_Coordinates;
-		pair<int, int> lr_NW_Coordinates;
-
-		long currMinEntropy=0;
-
-		int subDim = pow(2,k)/2;
-		int incrementSpace = pow(2,k)/4;
-
-		stats* pngStats = new stats(*im);
-		for (int y=incrementSpace; y < 3*incrementSpace; y++){
-			for (int x = incrementSpace; x< 3*incrementSpace; x++){
-				int SE = pngStats->entropy(make_pair(x,y), make_pair(x+subDim - 1, y+subDim - 1));
-				int SW = pngStats->entropy(make_pair(x+subDim,y), make_pair(x+subDim+subDim -1, y+subDim - 1));
-				int NE = pngStats->entropy(make_pair(x,y+subDim), make_pair(x+subDim-1, y+subDim+subDim-1));
-				int NW = pngStats->entropy(make_pair(x+subDim,y+subDim), make_pair(x+subDim+subDim-1, y+subDim+subDim-1));
-
-				int avgEntropy = (SE+SW+NE+NW)/4;
-
-				if (currMinEntropy == 0){
-					currMinEntropy = avgEntropy;
-				}
-				else if (currMinEntropy < avgEntropy){
-					currMinEntropy = avgEntropy;
-					ul_SE_Coordinates = make_pair(x,y);
-					lr_SE_Coordinates = make_pair(x+subDim - 1, y+subDim - 1);
-
-					ul_SW_Coordinates = make_pair(x+subDim,y);
-					lr_SW_Coordinates = make_pair(x+subDim+subDim -1, y+subDim - 1);
-
-					ul_NE_Coordinates = make_pair(x,y+subDim);
-					lr_NE_Coordinates = make_pair(x+subDim-1, y+subDim+subDim-1);
-
-					ul_NW_Coordinates = make_pair(x+subDim,y+subDim);
-					lr_NW_Coordinates = make_pair(x+subDim+subDim-1, y+subDim+subDim-1);
-				}
-			}
-		}
-		Node* newNode = new Node(ul_SE_Coordinates, k, pngStats->getAvg(ul_SE_Coordinates,lr_SE_Coordinates));
-
-		newNode->SE = buildTree(subPNGMaker(*im,ul_SE_Coordinates,lr_SE_Coordinates,k-1), k-1);
-		newNode->SW = buildTree(subPNGMaker(*im,ul_SW_Coordinates,lr_SW_Coordinates,k-1), k-1);
-		newNode->NE = buildTree(subPNGMaker(*im,ul_NE_Coordinates,lr_NE_Coordinates,k-1), k-1);
-		newNode->SW = buildTree(subPNGMaker(*im,ul_NW_Coordinates,lr_NW_Coordinates,k-1), k-1);
-
+	if(k==2){
+		//2x2 pretty straight foward
+		stats* pngStats= new stats(*im);
+		HSLAPixel avg= stat->getAvg(pair<int,int>(0,0),pair<int,int>(1,1));
+		Node* newNode= new Node(pair<int,int>(1,1), 2, avg);
+		curr->SE = new Node(pair<int,int>(0,0),1,*(im->getPixel(1,1)));
+		curr->SW = new Node(pair<int,int>(0,0),1,*(im->getPixel(0,1)));
+		curr->NE = new Node(pair<int,int>(0,0),1,*(im->getPixel(1,0)));
+		curr->NW = new Node(pair<int,int>(0,0),1,*(im->getPixel(0,0)));
 		delete pngStats;
-		delete im;
+		return newNode;
+	}
+	else {
+		//Pixel Doesn't matter just return 1 pixel
+		HSLAPixel avg= *(im->getPixel(0,0));
+		Node* newNode =  new Node(pair<int,int>(0,0), 1, avg);
 		return newNode;
 	}
 
 }
 
-PNG* toqutree::subPNGMaker(PNG* im, pair<int,int> ul, pair<int,int> lr, int k){
-	PNG* subimage = new PNG(pow(2,k),pow(2,k));
-	for(int x = ul.first; x < lr.first; x++){
-		for(int y = ul.second; y < lr.second; y++){
-			HSLAPixel* pixel = subimage->getPixel(x,y);
-			HSLAPixel* originalpixel = im->getPixel(x, y);
-			*pixel = *originalpixel; 
+PNG* toqutree::subPNG(PNG* originalIm, pair<int,int>start,int k){
+	PNG* subImg= new PNG(k/2, k/2);
+	for(int x = 0;x<originalIm->width(); x++){
+		for(int y = 0;y<originalIm->height(); y++){	
+			//Handles wrapping 		
+			HSLAPixel pixelSpot = *(subImg->getPixel(x,y));
+			pixelSpot= *(originalIm->getPixel((start.first+x)%originalIm->width(),(start.second+y)%originalIm->width()));
 		}
 	}
-	return subimage;
+	return subPNG;
 }
 
 //Debug Sheet
 //Compiles: yes
 //Working: no
 PNG toqutree::render(){
-
 // My algorithm for this problem included a helper function
 // that was analogous to Find in a BST, but it navigated the 
 // quadtree, instead.
+	return render(root);
+}
 
-/* your code here */
+PNG toqutree::render(Node* node){
+	int dim = node->dimension;
+	PNG img(dim,dim);
+	if(node->SE==NULL || node->SW==NULL || node->NE==NULL || node->NW==NULL){
+		//Case where we are at the end of the tree
+		for(int x = 0;x<dim;i++){
+			for(int y = 0; y<y ; y++){
+				HSLAP* pixel = img.getPixel(x,y)
+				pixel = node->avg;
+			}
+		}
+		//Return the rendered PNG
+		return img;
+	}
+	else {
+		int ctrx= node->center.first;
+		int ctry= node->center.second;
+		//render the subimages
+		PNG NEimg = render(node->NE);
+		PNG NWimg = render(node->NW);
+		PNG SEimg = render(node->SE);
+		PNG SWimg = render(nodee->SW);
+
+		for(int x=0; x< (dim/2); x++){
+			for(int y=0; y<(dim/2); y++){
+				//Idea from TA in lab
+				//THIS IS CANCER CALCULATION NATHAN, NOT SURE IF IT'S RIGHT
+				pair<int, int> NE = make_pair(((ctrx+x)%dim), (((ctry+dim/2)%dim+y)%dim));        
+				pair<int, int> NW = make_pair((((ctrx+dim/2)%dim+x)%dim), (((ctry+dim/2)%dim+y)%dim));
+				pair<int, int> SE = make_pair(((ctrx+x)%dim), (ctry+y)%dim));
+				pair<int, int> SW = make_pair((((ctrx+dim/2)%dim+x)%dim), ((ctry+y)%dim)));
+
+				img.getPixel(NE.first, NE.second) = *(NEimg.getPixel(x,y));
+				img.getPixel(NW.first, NW.second) = *(NWimg.getPixel(x,y));
+				img.getPixel(SE.first, SE.second) = *(SEimg.getPixel(x,y));
+				img.getPixel(SW.first, SW.second) = *(SWimg.getPixel(x,y));
+			}
+		}
+		return img;
+	}
+
 }
 
 /* oops, i left the implementation of this one in the file! */
@@ -203,7 +187,7 @@ void toqutree::prune(double tol){
 }
 
 void toqutree::prune(Node* node,double tol){
-
+	//No idea about prune rn
 }
 
 
@@ -226,6 +210,7 @@ void toqutree::clear(Node * & curr){
 		curr = NULL;
 	}
 }
+
 
 //Debug Sheet
 //Compiles: yes

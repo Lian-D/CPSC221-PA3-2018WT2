@@ -42,7 +42,7 @@ toqutree::toqutree(PNG & imIn, int k){
 /* that imIn is large enough to contain an image of that size. */
 
 // // Creating the subimage
-PNG* subimage = new PNG(pow(2,k),pow(2,k));
+PNG sub_image(pow(2,k),pow(2,k));
 int center = imIn.width()/2;
 // Getting the right coordinates for the subimage square
 int upleft = center - pow(2,k)/2;
@@ -136,17 +136,17 @@ PNG toqutree::render(){
 // My algorithm for this problem included a helper function
 // that was analogous to Find in a BST, but it navigated the 
 // quadtree, instead.
-	return render(root);
+	return renderimg(root);
 }
 
-PNG toqutree::render(Node* node){
+PNG toqutree::renderimg(Node* node){
 	int dim = node->dimension;
 	PNG img(dim,dim);
 	if(node->SE==NULL || node->SW==NULL || node->NE==NULL || node->NW==NULL){
 		//Case where we are at the end of the tree
-		for(int x = 0;x<dim;i++){
+		for(int x = 0;x<dim;x++){
 			for(int y = 0; y<y ; y++){
-				HSLAP* pixel = img.getPixel(x,y)
+				HSLAP* pixel = img.getPixel(x,y);
 				pixel = node->avg;
 			}
 		}
@@ -157,10 +157,10 @@ PNG toqutree::render(Node* node){
 		int ctrx= node->center.first;
 		int ctry= node->center.second;
 		//render the subimages
-		PNG NEimg = render(node->NE);
-		PNG NWimg = render(node->NW);
-		PNG SEimg = render(node->SE);
-		PNG SWimg = render(nodee->SW);
+		PNG NEimg = renderimg(node->NE);
+		PNG NWimg = renderimg(node->NW);
+		PNG SEimg = renderimg(node->SE);
+		PNG SWimg = renderimg(node->SW);
 
 		for(int x=0; x< (dim/2); x++){
 			for(int y=0; y<(dim/2); y++){
@@ -168,8 +168,8 @@ PNG toqutree::render(Node* node){
 				//THIS IS CANCER CALCULATION NATHAN, NOT SURE IF IT'S RIGHT
 				pair<int, int> NE = make_pair(((ctrx+x)%dim), (((ctry+dim/2)%dim+y)%dim));        
 				pair<int, int> NW = make_pair((((ctrx+dim/2)%dim+x)%dim), (((ctry+dim/2)%dim+y)%dim));
-				pair<int, int> SE = make_pair(((ctrx+x)%dim), (ctry+y)%dim));
-				pair<int, int> SW = make_pair((((ctrx+dim/2)%dim+x)%dim), ((ctry+y)%dim)));
+				pair<int, int> SE = make_pair(((ctrx+x)%dim), ((ctry+y)%dim));
+				pair<int, int> SW = make_pair((((ctrx+dim/2)%dim+x)%dim), ((ctry+y)%dim));
 
 				img.getPixel(NE.first, NE.second) = *(NEimg.getPixel(x,y));
 				img.getPixel(NW.first, NW.second) = *(NWimg.getPixel(x,y));

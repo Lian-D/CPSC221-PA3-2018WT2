@@ -125,8 +125,7 @@ public:
 
    toqutree(PNG & imIn,int k);
 
-   PNG* subPNGMaker(PNG* im, pair<int,int> ul, pair<int,int> lr, int k);
-
+   PNG* subPNG(PNG* subImg, PNG* originalIm, pair<int,int>side, k);
    /**
     * Render returns a PNG image consisting of the pixels
     * stored in the tree. may be used on pruned trees. Draws
@@ -134,6 +133,7 @@ public:
     * average color stored in the node.
     */
    PNG render();
+   PNG renderimg(Node* node);
 
    /*
     *  Prune function trims subtrees as high as possible in the tree.

@@ -135,18 +135,20 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 
 		//Optimal splitting point
 	pair<int,int> optimalCtr;
-	int currMinEntropy = 9999;
+	int currMinEntropy;
 
-		//SEARCH HERE
+	SEARCH HERE
 	for (int y=pivotStart.first; y < pivotStart.first+boundary; y++){
 		for (int x = pivotStart.first; x< pivotStart.first+boundary; x++){
-				//Entropy for respective corners;
+			//Entropy for respective corners;
 			int SE = pngStats->entropy(make_pair(x,y), make_pair((x+boundary-1) % k,(y+boundary-1) % k));
 			int SW = pngStats->entropy(make_pair((x+boundary) % k,y), make_pair((x-1) % k,(y+boundary-1)%k));
 			int NE = pngStats->entropy(make_pair(x,(y+boundary)% k), make_pair((x+boundary-1)%k,(y-1) % k));
 			int NW = pngStats->entropy(make_pair((x+boundary) % k,(y+boundary) % k), make_pair((x-1) % k,(y-1) % k));
 			int avgEntropy = (SE+SW+NE+NW)/4;
-
+			if (currMinEntropy == NULL){
+				currMinEntropy = avgEntropy;
+			}
 			if (currMinEntropy >= avgEntropy){
 				currMinEntropy = avgEntropy;
 				optimalCtr = make_pair(x,y);
@@ -158,11 +160,13 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 			}
 		}
 	}
+
+	//Create subPNGs
 	PNG* SE = subPNG(im, SEStart,k);
 	PNG* SW = subPNG(im, SWStart,k);
 	PNG* NE = subPNG(im, NEStart,k);
 	PNG* NW = subPNG(im, NWStart,k);
-
+	//Allocate sub PNGs
 	Node * newNode= new Node(optimalCtr, k, avg);
 	newNode->SE = buildTree(SE, k/2);
 	newNode->SW = buildTree(SW, k/2);
@@ -176,6 +180,11 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 	delete pngStats;
 	return newNode;
 }	
+
+// pair<int,int>toqutree::getBestCtr(pair<int,int> start, int boundary, int k, stats* stats, PNG* im){
+// 	pair<int, int> optimal = make_pair(k/2,k/2);
+// 	double minEntropy = 55
+// }
 
 PNG* toqutree::subPNG(PNG* originalIm, pair<int,int>start,int k){
 	PNG* subImg= new PNG(k/2, k/2);

@@ -177,7 +177,7 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 	// 	delete SW;
 	// 	delete pngStats;
 	// 	return newNode;
-	// }
+	}
 }	
 
 // pair<int,int>toqutree::getBestCtr(pair<int,int> start, int boundary, int k, stats* stats, PNG* im){

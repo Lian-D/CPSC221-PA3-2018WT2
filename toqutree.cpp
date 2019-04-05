@@ -115,9 +115,10 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 		return newNode;
 	}
 	else {
-		stats* pngStats= new stats(*im);
+		stats* pngStats = new stats(*im);
 		pair<int, int> optimalCentre = findCtr(start, boundary, k, pngStats, im);
 		
+		HSLAPixel avg = pngStats->getAvg(pair<int,int>(0,0),pair<int,int>(k-1,k-1));
 		pair<int,int> SEcoor = optimalCentre;
 		pair<int,int> SWcoor = make_pair((optimalCentre.first+boundary) % k, optimalCentre.second);
 		pair<int,int> NEcoor = make_pair(optimalCentre.first,(optimalCentre.second+boundary )% k);
@@ -152,7 +153,7 @@ pair<int,int>toqutree::findCtr(pair<int,int> start, int boundary, int k, stats* 
 		for (int y = start.second; y < (start.second+boundary); y++){
 			double currEntropy = avgEntropy(make_pair(x,y), k/2, stats, im);
 
-			if (currEntropy=<minEntropy){
+			if (currEntropy < minEntropy){
 				minEntropy = currEntropy;
 				optimal = make_pair(x,y);
 			}
@@ -174,14 +175,14 @@ double toqutree::avgEntropy(pair<int,int> coordinate, int k, stats* stats, PNG* 
 	double entropyNW= stats->entropy(NW_ul,NW_lr);
 	//SW
 	pair<int,int> SE_ul= make_pair(coordinate.first,coordinate.second);
-	pair<int,int> SE_lr= make_pair((coordinate.first+boundary-1) % k,(coordinate.second++boundary-1) % k);
+	pair<int,int> SE_lr= make_pair((coordinate.first+boundary-1) % k,(coordinate.second+boundary-1) % k);
 	double entropySE= stats->entropy(SE_ul,SE_lr);
 	//SE
 	pair<int,int> SW_ul= make_pair((coordinate.first+boundary )% k,coordinate.second);
-	pair<int,int> SW_lr= make_pair((coordinate.first-1) % k,(coordinate.second++boundary-1) % k);
+	pair<int,int> SW_lr= make_pair((coordinate.first-1) % k,(coordinate.second+boundary-1) % k);
 	double entropySW= stats->entropy(SW_ul,SW_lr);
 
-	return (entropySE+entropySW+entropyNEentropyNW)/4;
+	return (entropySE+entropySW+entropyNE+entropyNW)/4;
 
 }
 

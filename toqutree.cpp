@@ -130,7 +130,7 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 		int subDim = k/2;
 		int incrementSpace = k/4;
 
-		stats pngStats = stats(*im);
+		stats* pngStats = stats(*im);
 		for (int y=incrementSpace; y < 3*incrementSpace; y++){
 			for (int x = incrementSpace; x< 3*incrementSpace; x++){
 				int SE = pngStats.entropy(make_pair(x,y), make_pair(x+subDim - 1, y+subDim - 1));
@@ -173,16 +173,16 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 
 }
 
-PNG* toqutree::subPNGMaker(PNG * im, pair<int,int> ul, pair<int,int> lr, int k){
+PNG toqutree::subPNGMaker(PNG * im, pair<int,int> ul, pair<int,int> lr, int k){
 	PNG* subimage = new PNG(pow(2,k),pow(2,k));
 	for(int x = ul.first; x < lr.first; x++){
 		for(int y = ul.second; y < lr.second; y++){
-			HSLAPixel* pixel = *subimage.getPixel(x,y);
+			HSLAPixel* pixel = subimage->getPixel(x,y);
 			HSLAPixel* originalpixel = im.getPixel(x, y);
 			*pixel = *originalpixel; 
 		}
 	}
-	return subimage;
+	return *subimage;
 }
 
 //Debug Sheet

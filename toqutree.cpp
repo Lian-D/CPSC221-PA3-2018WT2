@@ -121,9 +121,9 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 		pair<int,int> SEcoor = optimalCentre;
 		pair<int,int> SWcoor = make_pair((optimalCentre.first+boundary) % k, optimalCentre.second);
 		pair<int,int> NEcoor = make_pair(optimalCentre.first,(optimalCentre.second+boundary )% k);
-		pair<int,int> SWcoor = make_pair((optimalCentre.first+boundary) % k,(optimalCentre.second+boundary) % k);
+		pair<int,int> NWcoor = make_pair((optimalCentre.first+boundary) % k,(optimalCentre.second+boundary) % k);
 
-		Node * newNode= new Node(center, k, avg);
+		Node * newNode= new Node(optimalCentre, k, avg);
 		PNG* subSE= subPNG( im, SEcoor, k);
 		PNG* subSW= subPNG( im, SWcoor, k);
 		PNG* subNE= subPNG( im, NEcoor, k);
@@ -167,21 +167,21 @@ double toqutree::avgEntropy(pair<int,int> coordinate, int k, stats* stats, PNG* 
 	//NE
 	pair<int,int> NE_ul= make_pair(coordinate.first,(coordinate.second+boundary) % k);
 	pair<int,int> NE_lr= make_pair((coordinate.first+boundary-1) % k,(coordinate.second+-1) %k );
-	double NE= stats->entropy(NE1,NE2);
+	double entropyNE= stats->entropy(NE_ul,NE_lr);
 	//NW
 	pair<int,int> NW_ul= make_pair((coordinate.first+boundary) % k,(coordinate.second+boundary) % k);
 	pair<int,int> NW_lr= make_pair((coordinate.first-1) % k,(coordinate.second+-1) % k);
-	double NW= stats->entropy(NW1,NW2);
+	double entropyNW= stats->entropy(NW_ul,NW_lr);
 	//SW
-	pair<int,int> SE_ul= make_pair(coordinate.first,y);
+	pair<int,int> SE_ul= make_pair(coordinate.first,coordinate.second);
 	pair<int,int> SE_lr= make_pair((coordinate.first+boundary-1) % k,(coordinate.second++boundary-1) % k);
-	double SE= stats->entropy(SE1,SE2);
+	double entropySE= stats->entropy(SE_ul,SE_lr);
 	//SE
-	pair<int,int> SW_ul= make_pair((coordinate.first+boundary )% k,coordinate.second+);
+	pair<int,int> SW_ul= make_pair((coordinate.first+boundary )% k,coordinate.second);
 	pair<int,int> SW_lr= make_pair((coordinate.first-1) % k,(coordinate.second++boundary-1) % k);
-	double SW= stats->entropy(SW1,SW2);
+	double entropySW= stats->entropy(SW_ul,SW_lr);
 
-	return (EntropySE+EntropySW+EntropyNE+EntropyNW)/4;
+	return (entropySE+entropySW+entropyNEentropyNW)/4;
 
 }
 

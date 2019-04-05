@@ -125,6 +125,8 @@ public:
 
    toqutree(PNG & imIn,int k);
 
+   PNG toqutree::subPNGMaker(PNG * im, pair<int,int> ul, pair<int,int> lr, int k);
+
    /**
     * Render returns a PNG image consisting of the pixels
     * stored in the tree. may be used on pruned trees. Draws
@@ -143,6 +145,7 @@ public:
    * You may want a recursive helper function for this one.
     */
    void prune(double tol);
+   void prune(Node* node,double tol);
 
     /* returns the number of nodes in the current toqutree. primarily used
      * for debugging and testing.
@@ -187,9 +190,10 @@ private:
    /**
    * Private helper function for the constructor. Recursively builds
    * the tree according to the specification of the constructor.
-   * @param s Contains the data used to split the rectangles
-   * @param ul upper left point of current node's rectangle.
-   * @param lr lower right point of current node's rectangle.
+   * @param: PNG * im, a pointer to a 2^k by 2^k image.
+   * @param: int k, the dimension of the image (note that this is redundant--could just be grabbed from the image itself)
+
+ 
    */
    Node * buildTree(PNG * im, int k);
 

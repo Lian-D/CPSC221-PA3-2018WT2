@@ -93,11 +93,11 @@ int toqutree::size(const Node* node){
 //Compiles: no
 //Working: no
 toqutree::Node * toqutree::buildTree(PNG * im, int k) {
-
+	//Case inwhich the we have the smallest division
 	if (k==0){
 		stats pngStats = stats(im);
-		pair<int, int> coordinates = makePair(0,0);
-		HSLAPixel avg = pngStats.getAverage(makePair(0,0),makePair(0,0);)
+		pair<int, int> coordinates = make_Pair(0,0);
+		HSLAPixel avg = pngStats.getAverage(make_Pair(0,0),make_Pair(0,0);)
 		Node* newNode = new Node(o,0,avg);
 		newNode->NW = NULL;
 		newNode->NE = NULL;
@@ -107,45 +107,82 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 		delete im;
 		return newNode;
 	}
-	/* your code here */
+	//Not the smallest division
+	else {
+		//For the SE
+		pair<int, int> ul_SE_Coordinates;
+		pair<int, int> lr_SE_Coordinates;
 
-	//Optimal entropy and points for deciding the split
-	pair<int,int> optimal;
-	double minEntropy;
+		//For the SW
+		pair<int, int> ul_SW_Coordinates;
+		pair<int, int> lr_SW_Coordinates;
 
-	int pngWidth = *im.width();
-	int pngLength = *im.length();
+		//For the NE 
+		pair<int, int> ul_NE_Coordinates;
+		pair<int, int> lr_NE_Coordinates;
 
-	int nodeLength = pngWidth/2;
-	int nodeHeight = pngLength/2;
+		//For the NW
+		pair<int, int> ul_NW_Coordinates;
+		pair<int, int> lr_NW_Coordinates;
 
-	int upperLeftAreaX = nodeLength/2;
-	int upperLeftAreaY = nodeHeight/2;
+		long currMinEntropy;
 
-	int lowerRightAreaX = upperLeftAreaX*3;
-	int lowerRightAreaY = upperLeftAreaY*3;
+		int subDim = k/2;
+		int incrementSpace = k/4;
 
-	stats pngStats = stats(im);
+		stats pngStats = stats(im);
+		for (int y=incrementSpace; y < 3*incrementSpace; y++){
+			for (int x = incrementSpace; x< 3*incrementSpace; x++){
+				int SE = pngStats.entropy(make_pair(x,y), make_pair(x+subDim - 1, y+subDim - 1));
+				int SW = pngStats.entropy(make_pair(x+subDim,y), make_pair(x+subDim+subDim -1, y+subDim - 1));
+				int NE = pngStats.entropy(make_pair(x,y+subDim), make_pair(x+subDim-1, y+subDim+subDim-1));
+				int NW = pngStats.entropy(make_pair(x+subDimx,y+subDimx), make_pair(x+subDim+subDim-1, y+subDim+subDim-1));
 
-	for(int i = upperLeftAreaX; i<lowerRightAreaX; i++){
-		for (int j = upperLeftAreaY; j <lowerRightAreaY; j++){
-			//These calculations might not be right
-			int Entropy NE = pngStats.entropy(makePair(i,j-nodeHeight),makePair(i + nodeLength,j -1));
-			int Entropy NW = pngStats.entropy(makePair(i-nodeLength,j-nodeHeight),makePair(i-1,j-1));
-			int Entropy SE = pngStats.entropy(makePair(i,j),makePair(i + nodeLength,j + nodeHeight));
-			int Entropy SW = pngStats.entropy(makePair(i-nodeLength,j),makePair(i - 1,j + nodeHeight));
+				int avgEntropy = (SE+SW+NE+NW)/4;
 
-			int totalEntropy = NE+NW+SE+SW;
-			int avgEntropy = totalEntropy/4;
-			//Checks for the lowest average Entropy at o(n) because I hate this project
-			if ((avgEntropy < minEntropy) || (minEntropy == NULL)){
-				minEntropy = avgEntropy;
-				optimal = makePair(i,j);
+				if (currMinEntropy == NULL){
+					currMinEntropy = avgEntropy;
+				}
+				else if (currMinEntropy < avgEntropy){
+					currMinEntropy = avgEntropy;
+					ul_SE_Coordinates = make_pair(x,y);
+					lr_SE_Coordinates = make_pair(x+subDim - 1, y+subDim - 1);
+
+					ul_SW_Coordinates = make_pair(x+subDim,y);
+					lr_SW_Coordinates = make_pair(x+subDim+subDim -1, y+subDim - 1);
+
+					ul_NE_Coordinates = make_pair(x,y+subDim);
+					lr_NE_Coordinates = make_pair(x+subDim-1, y+subDim+subDim-1);
+
+					ul_NW_Coordinates = make_pair(x+subDimx,y+subDimx);
+					lr_NW_Coordinates = make_pair(x+subDim+subDim-1, y+subDim+subDim-1);
+				}
 			}
 		}
+		Node* newNode = new Node(ul_SE_Coordinates, k, pngStats.getAvg(ul_SE_Coordinates,lr_SE_Coordinates));
+
+		newNode->SE = buildTree(subPNGMaker(im,ul_SE_Coordinates,lr_SE_Coordinates,k-1));
+		newNode->SW = buildTree(subPNGMaker(im,ul_SW_Coordinates,lr_SW_Coordinates,k-1));
+		newNode->NE = buildTree(subPNGMaker(im,ul_NE_Coordinates,lr_NE_Coordinates,k-1));
+		newNode->SW = buildTree(subPNGMaker(im,ul_NW_Coordinates,lr_NW_Coordinates,k-1));
+
+				delete pngStats;
+		delete im;
+		return newNode;
 	}
-	//Dunno what to do for the rest
-	return NULL;
+
+}
+
+PNG toqutree::subPNGMaker(PNG * im, pair<int,int> ul, pair<int,int> lr, int k){
+	PNG* subimage = new PNG(pow(2,k),pow(2,k));
+	for(int x = ul.first; x < ir.first; x++){
+		for(int y = ul.second; y < ir.second; y++){
+			HSLAPixel* pixel = subimage.getPixel(x,y);
+			HSLAPixel* originalpixel = im.getPixel(upleft + x, upleft + y);
+			*pixel = *originalpixel; 
+		}
+	}
+	return subImage;
 }
 
 //Debug Sheet
@@ -162,8 +199,10 @@ PNG toqutree::render(){
 
 /* oops, i left the implementation of this one in the file! */
 void toqutree::prune(double tol){
+	prune(root,tol);
+}
 
-	// prune(root,tol);
+void toqutree::prune(Node* node,double tol){
 
 }
 
@@ -174,29 +213,18 @@ void toqutree::prune(double tol){
 
 /* called by destructor and assignment operator*/
 void toqutree::clear(Node * & curr){
+	if (curr == NULL){
+		return;
+	}
+	else{
+		clear(curr->SE);
+		clear(curr->SW);
+		clear(curr->NE);
+		clear(curr->NW);
 
-	//Slowly clear
-	//Run through conds to slowly delete the node
-	if (curr->NW != NULL){
-		clear(root->NW);
-	}
-	if (curr->NE != NULL){
-		clear(root->NE);
-	}
-	if (curr->SW != NULL){
-		clear(root->SW);
-	}
-	if (curr->SE != NULL){
-		clear(root->SE);
-	}
-
-	if (curr->NW == NULL && curr->SW == NULL && curr->SE == NULL && curr->NE == NULL){
 		delete curr;
 		curr = NULL;
 	}
-	else {
-	}
-	//Everything should be deleted now
 }
 
 //Debug Sheet

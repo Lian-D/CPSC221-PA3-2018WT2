@@ -95,10 +95,10 @@ int toqutree::size(const Node* node){
 toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 	//Case inwhich the we have the smallest division
 	if (k==0){
-		stats pngStats = new stats(*im);
+		stats* pngStats = new stats(*im);
 		pair<int, int> coordinates = make_pair(0,0);
 		HSLAPixel avg = pngStats.getAvg(make_pair(0,0),make_pair(0,0));
-		Node* newNode = new Node(o,0,avg);
+		Node* newNode = new Node(coordinates,0,avg);
 		newNode->NW = NULL;
 		newNode->NE = NULL;
 		newNode->SW = NULL;
@@ -136,7 +136,7 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 				int SE = pngStats.entropy(make_pair(x,y), make_pair(x+subDim - 1, y+subDim - 1));
 				int SW = pngStats.entropy(make_pair(x+subDim,y), make_pair(x+subDim+subDim -1, y+subDim - 1));
 				int NE = pngStats.entropy(make_pair(x,y+subDim), make_pair(x+subDim-1, y+subDim+subDim-1));
-				int NW = pngStats.entropy(make_pair(x+subDimx,y+subDim), make_pair(x+subDim+subDim-1, y+subDim+subDim-1));
+				int NW = pngStats.entropy(make_pair(x+subDim,y+subDim), make_pair(x+subDim+subDim-1, y+subDim+subDim-1));
 
 				int avgEntropy = (SE+SW+NE+NW)/4;
 
@@ -161,10 +161,10 @@ toqutree::Node * toqutree::buildTree(PNG * im, int k) {
 		}
 		Node* newNode = new Node(ul_SE_Coordinates, k, pngStats.getAvg(ul_SE_Coordinates,lr_SE_Coordinates));
 
-		newNode->SE = buildTree(subPNGMaker(im,ul_SE_Coordinates,lr_SE_Coordinates,k-1), k-1);
-		newNode->SW = buildTree(subPNGMaker(im,ul_SW_Coordinates,lr_SW_Coordinates,k-1), k-1);
-		newNode->NE = buildTree(subPNGMaker(im,ul_NE_Coordinates,lr_NE_Coordinates,k-1), k-1);
-		newNode->SW = buildTree(subPNGMaker(im,ul_NW_Coordinates,lr_NW_Coordinates,k-1), k-1);
+		newNode->*SE = buildTree(subPNGMaker(im,ul_SE_Coordinates,lr_SE_Coordinates,k-1), k-1);
+		newNode->*SW = buildTree(subPNGMaker(im,ul_SW_Coordinates,lr_SW_Coordinates,k-1), k-1);
+		newNode->*NE = buildTree(subPNGMaker(im,ul_NE_Coordinates,lr_NE_Coordinates,k-1), k-1);
+		newNode->*SW = buildTree(subPNGMaker(im,ul_NW_Coordinates,lr_NW_Coordinates,k-1), k-1);
 
 		delete pngStats;
 		delete im;
@@ -178,11 +178,11 @@ PNG toqutree::subPNGMaker(PNG * im, pair<int,int> ul, pair<int,int> lr, int k){
 	for(int x = ul.first; x < lr.first; x++){
 		for(int y = ul.second; y < lr.second; y++){
 			HSLAPixel* pixel = *subimage.getPixel(x,y);
-			HSLAPixel* originalpixel = *im.getPixel(x, y);
+			HSLAPixel* originalpixel = im.getPixel(x, y);
 			*pixel = *originalpixel; 
 		}
 	}
-	return subImage;
+	return *subimage;
 }
 
 //Debug Sheet
